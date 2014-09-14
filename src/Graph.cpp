@@ -5,12 +5,11 @@
     #include <thread>
 #endif
 
-    Graph::Node::Node(Tile* t){
-        tile = t;
-        index = 0;
-        parent = -1;
-        visited = false;
-    }
+    Graph::Node::Node(Tile* t)
+    : tile(t)
+    , visited(false)
+    , index(0)
+    , parent(-1){}
     bool Graph::Node::operator==(const Node& rhs) const{
         return tile == rhs.tile;
     }
