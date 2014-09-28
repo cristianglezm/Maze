@@ -71,9 +71,9 @@ void createNodesFromGrid(Graph* g,std::vector<std::vector<Tile>>& grid,bool diag
 
 int main(){
     unsigned int row = 5, col = 5;
-    std::cout << "Introduce number of Rows: " << std::endl;
+    std::cout << "Introduce the number of Rows: " << std::endl;
     std::cin >> row;
-    std::cout << "Introduce number of columns: " << std::endl;
+    std::cout << "Introduce the number of columns: " << std::endl;
     std::cin >> col;
     std::vector<sf::Texture> texs;
     {
@@ -90,7 +90,7 @@ int main(){
     auto m = genGrid(texs,row,col);
     Graph g;
     createNodesFromGrid(&g,m);
-    sf::RenderWindow App(sf::VideoMode(1920, 1080), "Maze",sf::Style::Close);
+    sf::RenderWindow App(sf::VideoMode(1920, 1080), "Maze",sf::Style::Resize);
     Tile* origen = nullptr;
     Tile* dest = nullptr;
     auto spr = sf::Sprite(texs[2]);

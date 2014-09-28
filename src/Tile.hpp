@@ -52,8 +52,9 @@ class Tile{
         bool Contains(const sf::Vector2f& pos);
 
         Tile& setBounds(const sf::Vector2f& b);
-
         inline const sf::Vector2f& getBounds(){ return bounds; }
+        Tile& setScale(const sf::Vector2f& s);
+        inline const sf::Vector2f& getScale(){ return sprite.getScale(); }
     private:
         sf::Sprite sprite;
         sf::Vector2f position;

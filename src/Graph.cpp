@@ -99,19 +99,19 @@
             }
             std::vector<Node*> notVisitedCells;
             if(!allNeighboursVisited(cell,notVisitedCells)){
-                int num = 0;
+                int index = 0;
                 if(bdBinomial(rEngine)){
-                    num = random<int,std::binomial_distribution<int>>(1,notVisitedCells.size(),rEngine) - 1;
+                    index = random<int,std::binomial_distribution<int>>(1,notVisitedCells.size(),rEngine) - 1;
                 }else{
-                    num = random<int>(1,notVisitedCells.size(),rEngine) - 1;
+                    index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
                 }
-                Node* wall = notVisitedCells[num];
-                notVisitedCells.erase(notVisitedCells.begin() + num);
+                Node* wall = notVisitedCells[index];
+                notVisitedCells.erase(notVisitedCells.begin() + index);
                 wall->visited = true;
                 cells.push_back(wall);
                 if(!notVisitedCells.empty()){
-                    num = random<int>(1,notVisitedCells.size(),rEngine) - 1;
-                    auto newCell = notVisitedCells[num];
+                    index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
+                    auto newCell = notVisitedCells[index];
                     isolate(*newCell);
                     newCell->tile->setSprite(spr);
                     newCell->visited = true;

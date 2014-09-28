@@ -1,6 +1,6 @@
 ﻿# Maze #
 
-Maze is a demo to see different graph traversal algorithms in action.
+Maze is a demo to see different graph traversal algorithms in action and generate mazes with differents algorithms.
 
 [Video](https://www.youtube.com/watch?v=AEI9HyGn89U)
 

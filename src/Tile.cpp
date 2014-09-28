@@ -38,9 +38,12 @@
     bool Tile::Contains(const sf::Vector2f& pos){
         sf::FloatRect b(position,bounds);
         return b.contains(pos);
-
     }
     Tile& Tile::setBounds(const sf::Vector2f& b){
         bounds = b;
+        return *this;
+    }
+    Tile& Tile::setScale(const sf::Vector2f& s){
+        sprite.setScale(s);
         return *this;
     }
