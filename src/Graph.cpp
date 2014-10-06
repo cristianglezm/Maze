@@ -105,16 +105,16 @@
                 }else{
                     index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
                 }
-                Node* wall = notVisitedCells[index];
+                auto& wall = *notVisitedCells[index];
                 notVisitedCells.erase(notVisitedCells.begin() + index);
-                wall->visited = true;
-                cells.push_back(wall);
+                wall.visited = true;
+                cells.push_back(&wall);
                 if(!notVisitedCells.empty()){
                     index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
-                    auto newCell = notVisitedCells[index];
-                    isolate(*newCell);
-                    newCell->tile->setSprite(spr);
-                    newCell->visited = true;
+                    auto& newCell = *notVisitedCells[index];
+                    isolate(newCell);
+                    newCell.tile->setSprite(spr);
+                    newCell.visited = true;
                 }
             }else{
                 cells.erase(std::remove(cells.begin(),cells.end(),cell),cells.end());
