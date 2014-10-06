@@ -1,6 +1,12 @@
 ﻿# Maze #
 
 Maze is a demo to see different graph traversal algorithms in action and generate mazes with differents algorithms.
+Currently there is only one Algorithm to Generate the maze:
+
+* Growing Tree Algorithm: Can be configured with some parameters.
+
+	* Randomness: Choose the way that selects the next node to process its neighbors (between linear and random). 
+	* Binomial: Choose the way that selects the neighbor to disconnect from the rest (between uniform and binomial).
 
 [Video](https://www.youtube.com/watch?v=AEI9HyGn89U)
 
@@ -29,6 +35,6 @@ Use CMake to build the project.
 
 * select the root directory of SFML
 
-* mark the option to configure how to generate the maze and if you want to use slow_search
+* mark the SLOW_SEARCH option if you want to see the progress of the Algorithms.
 
-* press configure and then generate Project.
+* press configure and generate Project.

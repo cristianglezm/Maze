@@ -43,23 +43,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 #options
-
-option(RANDOM_AND_UNIFORM "Set how genMaze will generate the maze" OFF)
-option(LINIAL_AND_BINOMIAL "set how genMaze will generate the Maze" OFF)
-option(RANDOM_AND_BINOMIAL "set how genMaze will generate the Maze" OFF)
-option(LINIAL_AND_UNIFORM "set how genMaze will generate the Maze" OFF)
 option(SLOW_SEARCH "Slows DFS,BFS, GBFS" OFF)
-
-if(RANDOM_AND_UNIFORM)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRANDOM_AND_UNIFORM")
-elseif(LINIAL_AND_BINOMIAL)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINIAL_AND_BINOMIAL")
-elseif(RANDOM_AND_BINOMIAL)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRANDOM_AND_BINOMIAL")
-elseif(LINIAL_AND_UNIFORM)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINIAL_AND_UNIFORM")
-endif()
-
 if(SLOW_SEARCH)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSLOW_SEARCH")
 endif()

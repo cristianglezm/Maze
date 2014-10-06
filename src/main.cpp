@@ -84,22 +84,7 @@ int main(){
         }
     while(Continue){
         unsigned int row = 5, col = 5;
-        #ifdef RANDOM_AND_UNIFORM
-            float randomness = 1.0f;
-            float binomial = 0.0f;
-        #elif RANDOM_AND_BINOMIAL
-            float randomness = 1.0f;
-            float binomial = 1.0f;
-        #elif LINIAL_AND_UNIFORM
-            float randomness = 0.0f;
-            float binomial = 0.0f;
-        #elif LINIAL_AND_BINOMIAL
-            float randomness = 0.0f;
-            float binomial = 1.0f;
-        #else
-            float randomness = 0.9f;
-            float binomial = 0.85f;
-        #endif // RANDOM_AND_UNIFORM
+        float randomness = 0.9f,binomial = 0.85f;
         std::cout << "Introduce the number of Rows: " << std::endl;
         std::cin >> row;
         std::cout << "Introduce the number of columns: " << std::endl;
