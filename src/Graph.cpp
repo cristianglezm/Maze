@@ -1,6 +1,6 @@
 #include "Graph.hpp"
-#include <iostream>
 //#define SLOW_SEARCH
+#include "parallel.hpp"
 #ifdef SLOW_SEARCH
     #include <thread>
 #endif
@@ -74,11 +74,11 @@
     }
     void Graph::isolate(const Node& n){
         edges[n.index].clear();
-        for(auto& vec: edges){
-            vec.erase(std::remove_if(vec.begin(),vec.end(),
-                                     [&](const Edge& e){ return (e.next == n.index);}),
-                                     vec.end());
-        }
+        auto removeEdges = [&n](std::vector<Edge>& vec){
+        //for(auto& vec:edges){
+            vec.erase(std::remove_if(std::begin(vec),std::end(vec),[&n](const Edge& e){ return (n.index == e.next); }),std::end(vec));
+        };
+        parallel::for_each(edges.begin(),edges.end(),removeEdges);
     }
     void Graph::genMaze(Node& origin,float randomness,sf::Sprite spr,float binomial){
         // growing Tree algorithm
@@ -106,15 +106,15 @@
                     index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
                 }
                 auto& wall = *notVisitedCells[index];
-                notVisitedCells.erase(notVisitedCells.begin() + index);
                 wall.visited = true;
                 cells.push_back(&wall);
+                notVisitedCells.erase(notVisitedCells.begin() + index);
                 if(!notVisitedCells.empty()){
                     index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
                     auto& newCell = *notVisitedCells[index];
-                    isolate(newCell);
                     newCell.tile->setSprite(spr);
                     newCell.visited = true;
+                    isolate(newCell);
                 }
             }else{
                 cells.erase(std::remove(cells.begin(),cells.end(),cell),cells.end());
@@ -122,7 +122,7 @@
         }
     }
     bool Graph::allNeighboursVisited(Node* n,std::vector<Node*>& notVisited){
-        unsigned int visited = 0;
+        auto visited = 0u;
         for(auto& e:edges[n->index]){
             if(nodes[e.next].visited){
                 visited +=1;

@@ -2,6 +2,7 @@
 #define GRAPH_HPP
 #include <vector>
 #include <stack>
+#include <random>
 #include <queue>
 #include "Tile.hpp"
 /**
@@ -130,8 +131,8 @@ class Graph{
 };
 
 template<typename T,
-        typename Distribution = std::uniform_int_distribution<T>,
-        typename Engine = std::default_random_engine(std::random_device())>
+         typename Distribution = std::uniform_int_distribution<T>,
+         typename Engine = std::default_random_engine(std::random_device())>
 T random(T min,T max,Engine rEngine){
     Distribution dice(min,max);
     return dice(rEngine);
