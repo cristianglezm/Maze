@@ -120,6 +120,7 @@ class Graph{
          * @return std::vector<Node*> path
          */
         std::vector<Node*> gbfs(Node& s,Node& d);
+        ~Graph();
     private:
         /**
          * @brief Resets parents, visited and the color of tile

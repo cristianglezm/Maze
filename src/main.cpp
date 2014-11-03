@@ -76,10 +76,10 @@ int main(){
             t.loadFromFile("data/grass.jpg");
             texs.push_back(t);
             sf::Texture t2;
-            t2.loadFromFile("data/water.jpg");
+            t2.loadFromFile("data/Shrub.jpg");
             texs.push_back(t2);
             sf::Texture t3;
-            t3.loadFromFile("data/bot.png");
+            t3.loadFromFile("data/Ant.png");
             texs.push_back(t3);
         }
     while(Continue){

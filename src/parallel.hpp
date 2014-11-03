@@ -27,8 +27,8 @@ namespace parallel{
             threads[i] = std::thread([=,&f](){ std::for_each(BlockStart, BlockEnd, f); });
             BlockStart = BlockEnd;
         }
-        for(auto& t:threads){ t.join(); }
         std::for_each(BlockStart, last, f);
+        for(auto& t:threads){ t.join(); }
     }
     /**
      *

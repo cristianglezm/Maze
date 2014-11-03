@@ -74,11 +74,17 @@
     }
     void Graph::isolate(const Node& n){
         edges[n.index].clear();
+    //#define PARALLEL_ISOLATE
+    #ifdef PARALLEL_ISOLATE
         auto removeEdges = [&n](std::vector<Edge>& vec){
-        //for(auto& vec:edges){
             vec.erase(std::remove_if(std::begin(vec),std::end(vec),[&n](const Edge& e){ return (n.index == e.next); }),std::end(vec));
         };
         parallel::for_each(edges.begin(),edges.end(),removeEdges);
+    #else
+        for(auto& vec:edges){
+            vec.erase(std::remove_if(std::begin(vec),std::end(vec),[&n](const Edge& e){ return (n.index == e.next); }),std::end(vec));
+        }
+    #endif
     }
     void Graph::genMaze(Node& origin,float randomness,sf::Sprite spr,float binomial){
         // growing Tree algorithm
@@ -237,6 +243,7 @@
         return path;
     }
     std::vector<Graph::Node*> Graph::gbfs(Node& s,Node& d){
+    #ifdef MANHATTAN
         auto eval = [&](Node* a,Node* b){
             auto sumA = 10 *(std::abs(a->tile->getPosition().x-d.tile->getPosition().x)
                            + std::abs(a->tile->getPosition().y-d.tile->getPosition().y));
@@ -244,6 +251,19 @@
                            + std::abs(b->tile->getPosition().y-d.tile->getPosition().y));
             return (sumA > sumB);
         };
+    #elif defined CHEBYSEV
+        auto eval = [&](Node* a,Node* b){
+            auto maxA = std::max(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
+            auto maxB = std::max(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            return (maxA > maxB);
+        };
+    #else // EUCLIDEAN
+        auto eval = [&](Node* a,Node* b){
+            auto hypotA = std::hypot(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
+            auto hypotB = std::hypot(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            return (hypotA > hypotB);
+        };
+    #endif
         std::priority_queue<Node*,std::deque<Node*>,decltype(eval)> queue(eval);
         reset();
         std::vector<Node*> path;
@@ -294,6 +314,10 @@
             }
         }
         return path;
+    }
+    Graph::~Graph(){
+        nodes.clear();
+        edges.clear();
     }
     void Graph::reset(){
         for(auto& n: nodes){
