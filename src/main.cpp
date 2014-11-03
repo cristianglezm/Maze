@@ -73,7 +73,7 @@ int main(){
     std::vector<sf::Texture> texs;
         {
             sf::Texture t;
-            t.loadFromFile("data/grass.jpg");
+            t.loadFromFile("data/floor.jpg");
             texs.push_back(t);
             sf::Texture t2;
             t2.loadFromFile("data/Shrub.jpg");
