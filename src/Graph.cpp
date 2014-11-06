@@ -1,5 +1,5 @@
 #include "Graph.hpp"
-#define SLOW_SEARCH
+//#define SLOW_SEARCH
 #include "parallel.hpp"
 #ifdef SLOW_SEARCH
     #include <thread>
