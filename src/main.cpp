@@ -9,64 +9,7 @@
 #include "Tile.hpp"
 #include "Graph.hpp"
 
- std::vector<std::vector<Tile>> genGrid(std::vector<sf::Texture>& textures,unsigned int row,unsigned int col){
-    auto m = std::vector<std::vector<Tile>>(col);
-    sf::Vector2f b(0.0f,0.0f);
-    auto type = Tile::Type::GRASS;
-    sf::Sprite s;
-    for(unsigned int i=0;i<col;++i){
-        m[i] = std::vector<Tile>(row,Tile(b,type,s));
-        b.x = 0.0f;
-        for(unsigned int j=0;j<row;++j){
-            s = sf::Sprite(textures[type]);
-            s.setScale(0.5f,0.5f);
-            m[i][j] = Tile(sf::Vector2f(b.y,b.x),type,s);
-            b.x += m[i][j].getBounds().x;
-        }
-        b.y += m[i][row-1].getBounds().y;
-    }
-    return std::move(m);
-}
-
-void createNodesFromGrid(Graph* g,std::vector<std::vector<Tile>>& grid,bool diagonal = false){
-    for(auto& gr:grid){
-        for(auto& t:gr){
-            g->addNode(Graph::Node(&t));
-        }
-    }
-    int col = grid.size();
-    int row = grid[0].size();
-    auto size = row * col;
-    for(int i=0;i<size;++i){
-        // down
-        if((i%row)!=(row-1)){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+1),0));
-        }
-        // right
-        if((i+row)<size){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row),0));
-        }
-        // diagonal
-        if(diagonal){
-            // right-down : left-top
-            if((i+row+1)<size){
-                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row+1),0));
-            }
-            // left-down : right-top
-            if((i+row-1)<size){
-                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row-1),0));
-            }
-        }
-        // left
-        if((i-row)>=0){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-row),0));
-        }
-        // up
-        if((i-1)>=0 && ((i-1)%row)!=(row-1)){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-1),0));
-        }
-    }
-}
+void benchmark(const unsigned& testCount);
 
 int main(){
     bool Continue = true;
@@ -94,9 +37,9 @@ int main(){
         std::cout << "Binomial: " << std::endl;
         std::cin >> binomial;
         Continue = false;
-        auto m = genGrid(texs,row,col);
+        auto m = createGrid(texs,row,col);
         Graph g;
-        createNodesFromGrid(&g,m);
+        createGraph(&g,m);
 
         sf::RenderWindow App(sf::VideoMode(1920, 1080), "Maze",sf::Style::Default);
         Tile* origen = nullptr;
@@ -119,15 +62,10 @@ int main(){
                         if(event.key.code == sf::Keyboard::B){
                             if(origen && dest){
                                 auto t1 = std::thread([&](){
-                                                    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-                                                    start = std::chrono::high_resolution_clock::now();
+                                                    bot.setPosition(origen->getPosition());
+                                                    sf::Clock c;
                                                         auto path = g.bfs(g.getNode(origen),g.getNode(dest));
-                                                    end = std::chrono::high_resolution_clock::now();
-                                                    std::chrono::duration<long double> elapsed_seconds = end-start;
-                                                    std::time_t end_time = std::chrono::high_resolution_clock::to_time_t(end);
-
-                                                    std::cout << " BFS: -> finished computation at " << std::ctime(&end_time)
-                                                              << "elapsed time: " << elapsed_seconds.count() << "s\n";
+                                                    std::cout << " BFS: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
                                                     auto pathSize = path.size();
                                                     std::cout << "Path Size: " << pathSize << std::endl;
                                                     for(unsigned int i = 0;i<pathSize;){
@@ -142,15 +80,10 @@ int main(){
                         if(event.key.code == sf::Keyboard::G){
                             if(origen && dest){
                                 auto t1 = std::thread([&](){
-                                                    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-                                                    start = std::chrono::high_resolution_clock::now();
+                                                    bot.setPosition(origen->getPosition());
+                                                    sf::Clock c;
                                                         auto path = g.gbfs(g.getNode(origen),g.getNode(dest));
-                                                    end = std::chrono::high_resolution_clock::now();
-                                                    std::chrono::duration<long double> elapsed_seconds = end-start;
-                                                    std::time_t end_time = std::chrono::high_resolution_clock::to_time_t(end);
-
-                                                    std::cout << " GBFS: -> finished computation at " << std::ctime(&end_time)
-                                                              << "elapsed time: " << elapsed_seconds.count() << "s\n";
+                                                    std::cout << " GBFS: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
                                                     auto pathSize = path.size();
                                                     std::cout << "Path Size: " << pathSize << std::endl;
                                                     for(unsigned int i = 0;i<pathSize;){
@@ -166,15 +99,9 @@ int main(){
                             if(origen && dest){
                                 auto t1 = std::thread([&](){
                                                     bot.setPosition(origen->getPosition());
-                                                    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-                                                    start = std::chrono::high_resolution_clock::now();
+                                                    sf::Clock c;
                                                         auto path = g.dfs(g.getNode(origen),g.getNode(dest));
-                                                    end = std::chrono::high_resolution_clock::now();
-                                                    std::chrono::duration<long double> elapsed_seconds = end-start;
-                                                    std::time_t end_time = std::chrono::high_resolution_clock::to_time_t(end);
-
-                                                    std::cout << " DFS: -> finished computation at " << std::ctime(&end_time)
-                                                              << "elapsed time: " << elapsed_seconds.count() << "s\n";
+                                                    std::cout << " DFS: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
                                                     auto pathSize = path.size();
                                                     std::cout << "Path Size: " << pathSize << std::endl;
                                                     for(unsigned int i = 0;i<pathSize;){
@@ -195,32 +122,24 @@ int main(){
                         if(event.key.code == sf::Keyboard::M){
                             if(origen){
                                 auto t1 = std::thread([&](){
-                                                    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-                                                    start = std::chrono::high_resolution_clock::now();
+                                                    sf::Clock c;
                                                         g.genMaze(g.getNode(origen),randomness,sf::Sprite(texs[1]),binomial);
-                                                    end = std::chrono::high_resolution_clock::now();
-                                                    std::chrono::duration<long double> elapsed_seconds = end-start;
-                                                    std::time_t end_time = std::chrono::high_resolution_clock::to_time_t(end);
-
-                                                    std::cout << "1 GenMaze: -> finished computation at " << std::ctime(&end_time)
-                                                              << "elapsed time: " << elapsed_seconds.count() << "s\n";
+                                                    std::cout << "Origen GenMaze: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
                                                       });
                                                       t1.detach();
                             }
                             if(dest){
                                 auto t2 = std::thread([&](){
-                                                    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-                                                    start = std::chrono::high_resolution_clock::now();
+                                                    sf::Clock c;
                                                         g.genMaze(g.getNode(dest),randomness,sf::Sprite(texs[1]),binomial);
-                                                    end = std::chrono::high_resolution_clock::now();
-                                                    std::chrono::duration<long double> elapsed_seconds = end-start;
-                                                    std::time_t end_time = std::chrono::high_resolution_clock::to_time_t(end);
-
-                                                    std::cout << "2 GenMaze: -> finished computation at " << std::ctime(&end_time)
-                                                              << "elapsed time: " << elapsed_seconds.count() << "s\n";
+                                                    std::cout << "Dest GenMaze: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
                                                       });
                                                       t2.detach();
                             }
+                        }
+                        if(event.key.code == sf::Keyboard::S){
+                            sf::Image capture = App.capture();
+                            capture.saveToFile("ScreenShot.png");
                         }
                         if(event.key.code == sf::Keyboard::Add){
                             sf::View v = App.getView();
@@ -236,22 +155,22 @@ int main(){
                     case sf::Event::KeyPressed:
                         if(event.key.code == sf::Keyboard::Down){
                             auto v = App.getView();
-                            v.move(0,-100);
+                            v.move(0,100);
                             App.setView(v);
                         }
                         if(event.key.code == sf::Keyboard::Up){
                             auto v = App.getView();
-                            v.move(0,100);
+                            v.move(0,-100);
                             App.setView(v);
                         }
                         if(event.key.code == sf::Keyboard::Right){
                             auto v = App.getView();
-                            v.move(-100,0);
+                            v.move(100,0);
                             App.setView(v);
                         }
                         if(event.key.code == sf::Keyboard::Left){
                             auto v = App.getView();
-                            v.move(100,0);
+                            v.move(-100,0);
                             App.setView(v);
                         }
                         break;
@@ -303,9 +222,45 @@ int main(){
         }
         App.close();
         std::cout << "Do you want to replay?(y/n)" << std::endl;
-        std::string answer = "";
+        std::string answer;
         std::cin >> answer;
         Continue = (answer == "y");
     }
+    std::cout << "Run Benchmark?" << std::endl;
+    std::string answer;
+    std::cin >> answer;
+    if(answer == "y"){
+        benchmark(501);
+    }
     return 0;
+}
+
+void benchmark(const unsigned& testCount){
+    auto total = 0.0f;
+    std::cout << "Running Benchmark genMaze..." << std::endl;
+    std::vector<sf::Texture> texs;
+        {
+            sf::Texture t;
+            t.loadFromFile("data/floor.jpg");
+            texs.push_back(t);
+            sf::Texture t2;
+            t2.loadFromFile("data/Shrub.jpg");
+            texs.push_back(t2);
+            sf::Texture t3;
+            t3.loadFromFile("data/Ant.png");
+            texs.push_back(t3);
+        }
+    for(int i=1;i<=testCount;i+=100){
+        auto testGrid = createGrid(texs,i,i);
+        Graph g;
+        createGraph(&g,testGrid,false);
+        std::cout << "Processing grid: " << i<<"x"<< i;
+        sf::Clock c;
+        g.genMaze(g.getNode(&testGrid[0][0]),0.5f,{},0.2f);
+        auto timeTaken = c.restart().asSeconds();
+        total += timeTaken;
+        std::cout<< " Completed In: " << timeTaken << " seconds" << std::endl;
+    }
+    std::cout << "Total: " << total << " seconds" << std::endl;
+    std::cout << "avg mean: " << (total / testCount) << " seconds" << std::endl;
 }

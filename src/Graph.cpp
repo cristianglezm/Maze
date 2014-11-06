@@ -1,5 +1,5 @@
 #include "Graph.hpp"
-//#define SLOW_SEARCH
+#define SLOW_SEARCH
 #include "parallel.hpp"
 #ifdef SLOW_SEARCH
     #include <thread>
@@ -106,17 +106,19 @@
             std::vector<Node*> notVisitedCells;
             if(!allNeighboursVisited(cell,notVisitedCells)){
                 int index = 0;
+                auto NotVisitedCellsSize = notVisitedCells.size();
                 if(bdBinomial(rEngine)){
-                    index = random<int,std::binomial_distribution<int>>(1,notVisitedCells.size(),rEngine) - 1;
+                    index = random<int,std::binomial_distribution<int>>(1,NotVisitedCellsSize,rEngine) - 1;
                 }else{
-                    index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
+                    index = random<int>(1,NotVisitedCellsSize,rEngine) - 1;
                 }
                 auto& wall = *notVisitedCells[index];
                 wall.visited = true;
                 cells.push_back(&wall);
                 notVisitedCells.erase(notVisitedCells.begin() + index);
                 if(!notVisitedCells.empty()){
-                    index = random<int>(1,notVisitedCells.size(),rEngine) - 1;
+                    --NotVisitedCellsSize;
+                    index = random<int>(1,NotVisitedCellsSize,rEngine) - 1;
                     auto& newCell = *notVisitedCells[index];
                     newCell.tile->setSprite(spr);
                     newCell.visited = true;
@@ -326,3 +328,62 @@
             n.parent = -1;
         }
     }
+
+std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col){
+    auto m = std::vector<std::vector<Tile>>(col);
+    sf::Vector2f b(0.0f,0.0f);
+    auto type = Tile::Type::GRASS;
+    sf::Sprite s;
+    for(unsigned int i=0;i<col;++i){
+        m[i] = std::vector<Tile>(row,Tile(b,type,s));
+        b.x = 0.0f;
+        for(unsigned int j=0;j<row;++j){
+            s = sf::Sprite(textures[type]);
+            s.setScale(0.5f,0.5f);
+            m[i][j] = Tile(sf::Vector2f(b.y,b.x),type,s);
+            b.x += m[i][j].getBounds().x;
+        }
+        b.y += m[i][row-1].getBounds().y;
+    }
+    return std::move(m);
+}
+
+void createGraph(Graph* g,std::vector<std::vector<Tile>>& grid,bool diagonal){
+    for(auto& gr:grid){
+        for(auto& t:gr){
+            g->addNode(Graph::Node(&t));
+        }
+    }
+    int col = grid.size();
+    int row = grid[0].size();
+    auto size = row * col;
+    for(int i=0;i<size;++i){
+        // down
+        if((i%row)!=(row-1)){
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+1),0));
+        }
+        // right
+        if((i+row)<size){
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row),0));
+        }
+        // diagonal
+        if(diagonal){
+            // right-down : left-top
+            if((i+row+1)<size){
+                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row+1),0));
+            }
+            // left-down : right-top
+            if((i+row-1)<size){
+                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row-1),0));
+            }
+        }
+        // left
+        if((i-row)>=0){
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-row),0));
+        }
+        // up
+        if((i-1)>=0 && ((i-1)%row)!=(row-1)){
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-1),0));
+        }
+    }
+}

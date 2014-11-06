@@ -4,6 +4,7 @@
 #include <stack>
 #include <random>
 #include <queue>
+#include <SFML/Graphics/Texture.hpp>
 #include "Tile.hpp"
 /**
  * @brief Graph class.
@@ -138,5 +139,10 @@ T random(T min,T max,Engine rEngine){
     Distribution dice(min,max);
     return dice(rEngine);
 }
+/**
+ *  @brief Helper function to build the grid.
+ */
+std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col);
+void createGraph(Graph* g,std::vector<std::vector<Tile>>& grid,bool diagonal = false);
 
 #endif // GRAPH_HPP
