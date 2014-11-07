@@ -119,6 +119,15 @@ int main(){
                                 g.removeNode(g.getNode(origen));
                             }
                         }
+                        if(event.key.code == sf::Keyboard::C){
+                            if(origen && dest){
+                                if(g.areConnected(g.getNode(origen),g.getNode(dest))){
+                                    std::cout << "Origen And Destination are connected"<< std::endl;
+                                }else{
+                                    std::cout << "Origen And Destination are not connected"<< std::endl;
+                                }
+                            }
+                        }
                         if(event.key.code == sf::Keyboard::M){
                             if(origen){
                                 auto t1 = std::thread([&](){

@@ -86,6 +86,13 @@ class Graph{
          */
         void isolate(const Node& n);
         /**
+         * @brief check if two nodes are connected.
+         * @param n1 const Graph::Node &
+         * @param n2 const Graph::Node &
+         * @return bool
+         */
+        bool areConnected(const Node& n1,const Node& n2);
+        /**
          * @brief Checks if a node has neighbors that are not visited.
          * @param n Graph::Node *
          * @param notVisited std::vector<Node*> nodes that are not visited.

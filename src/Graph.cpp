@@ -86,6 +86,15 @@
         }
     #endif
     }
+    bool Graph::areConnected(const Node& n1,const Node& n2){
+        bool n1Connected = std::find_if(edges[n1.index].begin(),edges[n1.index].end(),[&](const Edge& e){
+                                        return (n1.index == e.prev && n2.index == e.next);
+                                        }) != edges[n1.index].end();
+        bool n2Connected = std::find_if(edges[n2.index].begin(),edges[n2.index].end(),[&](const Edge& e){
+                                        return (n2.index == e.prev && n1.index == e.next);
+                                        }) != edges[n2.index].end();
+        return (n1Connected && n2Connected);
+    }
     void Graph::genMaze(Node& origin,float randomness,sf::Sprite spr,float binomial){
         // growing Tree algorithm
         std::vector<Node*> cells;
