@@ -340,19 +340,18 @@
 
 std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col){
     auto m = std::vector<std::vector<Tile>>(col);
-    sf::Vector2f b(0.0f,0.0f);
     auto type = Tile::Type::GRASS;
     sf::Sprite s;
     for(unsigned int i=0;i<col;++i){
-        m[i] = std::vector<Tile>(row,Tile(b,type,s));
-        b.x = 0.0f;
+        m[i] = std::vector<Tile>(row,Tile(sf::Vector2f(0,0),type,s));
         for(unsigned int j=0;j<row;++j){
             s = sf::Sprite(textures[type]);
             s.setScale(0.5f,0.5f);
-            m[i][j] = Tile(sf::Vector2f(b.y,b.x),type,s);
-            b.x += m[i][j].getBounds().x;
+            auto& borders = m[i][j].getBounds();
+            float x = j * borders.x / 2;
+            float y = i * borders.y / 2;
+            m[i][j] = Tile(sf::Vector2f(x,y),type,s);
         }
-        b.y += m[i][row-1].getBounds().y;
     }
     return std::move(m);
 }

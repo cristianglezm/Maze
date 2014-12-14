@@ -16,10 +16,10 @@ int main(){
     std::vector<sf::Texture> texs;
         {
             sf::Texture t;
-            t.loadFromFile("data/floor.jpg");
+            t.loadFromFile("data/landscapeTiles_067.png");
             texs.push_back(t);
             sf::Texture t2;
-            t2.loadFromFile("data/Shrub.jpg");
+            t2.loadFromFile("data/landscapeTiles_036.png");
             texs.push_back(t2);
             sf::Texture t3;
             t3.loadFromFile("data/Ant.png");
@@ -220,7 +220,7 @@ int main(){
                         break;
                 }
             }
-            App.clear();
+            App.clear(sf::Color::Black);
             for(unsigned int i=0;i<col;++i){
                 for(unsigned int j=0;j<row;++j){
                     App.draw(m[i][j].getSprite());

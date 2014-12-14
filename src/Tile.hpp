@@ -62,4 +62,6 @@ class Tile{
         Type type;
 };
 
+sf::Vector2f Cart2DToIso(sf::Vector2f pos);
+
 #endif // TILE_HPP

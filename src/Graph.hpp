@@ -146,6 +146,18 @@ T random(T min,T max,Engine rEngine){
     Distribution dice(min,max);
     return dice(rEngine);
 }
+
+/*
+template<typename T,
+         typename Distribution = std::uniform_int_distribution<T>,
+         typename Engine = std::default_random_engine(std::random_device()),
+         typename...Args>
+T random(Engine rEngine,Args...args){
+    Distribution dice(std::move(args)...);
+    return dice(rEngine);
+}
+*/
+
 /**
  *  @brief Helper function to build the grid.
  */
