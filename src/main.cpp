@@ -13,8 +13,24 @@ void benchmark(const unsigned& testCount);
 
 int main(){
     bool Continue = true;
-    std::vector<sf::Texture> texs;
-        {
+    while(Continue){
+        unsigned int row = 5, col = 5;
+        float randomness = 0.9f,binomial = 0.85f;
+        std::string isIso;
+        std::cout << "Introduce the number of Rows: " << std::endl;
+        std::cin >> row;
+        std::cout << "Introduce the number of columns: " << std::endl;
+        std::cin >> col;
+        std::cout << "Randomness: " << std::endl;
+        std::cin >> randomness;
+        std::cout << "Binomial: " << std::endl;
+        std::cin >> binomial;
+        std::cout << "Isometric / topDown? (iso|top)" << std::endl;
+        std::cin >> isIso;
+        // textures
+        std::vector<sf::Texture> texs;
+        bool isIsometric = isIso == "iso";
+        if(isIsometric){
             sf::Texture t;
             t.loadFromFile("data/landscapeTiles_067.png");
             texs.push_back(t);
@@ -24,20 +40,19 @@ int main(){
             sf::Texture t3;
             t3.loadFromFile("data/Ant.png");
             texs.push_back(t3);
+        }else{
+            sf::Texture t;
+            t.loadFromFile("data/floor.jpg");
+            texs.push_back(t);
+            sf::Texture t2;
+            t2.loadFromFile("data/shrub.jpg");
+            texs.push_back(t2);
+            sf::Texture t3;
+            t3.loadFromFile("data/Ant.png");
+            texs.push_back(t3);
         }
-    while(Continue){
-        unsigned int row = 5, col = 5;
-        float randomness = 0.9f,binomial = 0.85f;
-        std::cout << "Introduce the number of Rows: " << std::endl;
-        std::cin >> row;
-        std::cout << "Introduce the number of columns: " << std::endl;
-        std::cin >> col;
-        std::cout << "Randomness: " << std::endl;
-        std::cin >> randomness;
-        std::cout << "Binomial: " << std::endl;
-        std::cin >> binomial;
         Continue = false;
-        auto m = createGrid(texs,row,col);
+        auto m = createGrid(texs,row,col,isIsometric);
         Graph g;
         createGraph(&g,m);
 
@@ -148,7 +163,7 @@ int main(){
                         }
                         if(event.key.code == sf::Keyboard::S){
                             sf::Image capture = App.capture();
-                            capture.saveToFile("ScreenShot.png");
+                            capture.saveToFile("capture.png");
                         }
                         if(event.key.code == sf::Keyboard::Add){
                             sf::View v = App.getView();
@@ -198,6 +213,7 @@ int main(){
                                             if(dest){
                                                 dest->setColor(sf::Color::Red);
                                             }
+                                            break;
                                         }
                                     }
                                 }
@@ -213,6 +229,7 @@ int main(){
                                             std::cout << "dest: " << g.getNode(dest).index <<std::endl;
                                             std::cout << "Position: -> [" << t.getPosition().x << ","<< t.getPosition().y << "]" << std::endl;
                                             t.setColor(sf::Color::Red);
+                                            break;
                                         }
                                     }
                                 }

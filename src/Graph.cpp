@@ -338,19 +338,26 @@
         }
     }
 
-std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col){
+std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col,bool isometric){
     auto m = std::vector<std::vector<Tile>>(col);
     auto type = Tile::Type::GRASS;
     sf::Sprite s;
-    for(unsigned int i=0;i<col;++i){
-        m[i] = std::vector<Tile>(row,Tile(sf::Vector2f(0,0),type,s));
-        for(unsigned int j=0;j<row;++j){
+    for(auto i=0u;i<col;++i){
+        m[i] = std::vector<Tile>(row,Tile(sf::Vector2f(0,0),type,s,isometric));
+        for(auto j=0u;j<row;++j){
             s = sf::Sprite(textures[type]);
             s.setScale(0.5f,0.5f);
             auto& borders = m[i][j].getBounds();
-            float x = j * borders.x / 2;
-            float y = i * borders.y / 2;
-            m[i][j] = Tile(sf::Vector2f(x,y),type,s);
+            float x;
+            float y;
+            if(isometric){
+                x = j * borders.x / 2;
+                y = i * borders.y / 2;
+            }else{
+                x = j * borders.x;
+                y = i * borders.y;
+            }
+            m[i][j] = Tile(sf::Vector2f(x,y),type,s,isometric);
         }
     }
     return std::move(m);

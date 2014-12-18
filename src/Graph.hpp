@@ -161,7 +161,7 @@ T random(Engine rEngine,Args...args){
 /**
  *  @brief Helper function to build the grid.
  */
-std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col);
+std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col,bool isometric=false);
 void createGraph(Graph* g,std::vector<std::vector<Tile>>& grid,bool diagonal = false);
 
 #endif // GRAPH_HPP

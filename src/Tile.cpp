@@ -3,10 +3,15 @@
         sf::Vector2f tmp(pos.x - pos.y,(pos.x + pos.y) / 2);
         return tmp;
     }
-    Tile::Tile(const sf::Vector2f& pos,const Type& t,const sf::Sprite& s){
+    Tile::Tile(const sf::Vector2f& pos,const Type& t,const sf::Sprite& s,bool isIsometric){
         sprite = s;
-        position = Cart2DToIso(pos);
         type = t;
+        isometric = isIsometric;
+        if(isIsometric){
+            position = Cart2DToIso(pos);
+        }else{
+            position = pos;
+        }
         sprite.setPosition(position);
         bounds.y = sprite.getGlobalBounds().height;
         bounds.x = sprite.getGlobalBounds().width;
@@ -22,21 +27,28 @@
         sprite.setScale(scale);
         bounds.y = sprite.getGlobalBounds().height;
         bounds.x = sprite.getGlobalBounds().width;
-        sf::Vector2f diffBounds;
-        diffBounds.x = oldbounds.width - bounds.x;
-        diffBounds.y = oldbounds.height - bounds.y;
-        position.x += diffBounds.x;
-        position.y += diffBounds.y;
+        if(isometric){
+            position.x += oldbounds.width - bounds.x;
+            position.y += oldbounds.height - bounds.y;
+        }
         sprite.setPosition(position);
         return *this;
     }
     Tile& Tile::setPosition(const sf::Vector2f& pos){
-        position = pos;//Cart2DToIso(pos);
+        if(isometric){
+            position = Cart2DToIso(pos);
+        }else{
+            position = pos;
+        }
         sprite.setPosition(position);
         return *this;
     }
     Tile& Tile::translate(const sf::Vector2f& amount){
-        position += Cart2DToIso(amount);
+        if(isometric){
+            position += Cart2DToIso(amount);
+        }else{
+            position += amount;
+        }
         sprite.setPosition(position);
         return *this;
     }

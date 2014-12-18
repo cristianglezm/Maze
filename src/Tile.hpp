@@ -15,7 +15,7 @@ class Tile{
         /**
          * @brief Basic constructor.
          */
-        explicit Tile(const sf::Vector2f& pos,const Type& t,const sf::Sprite& s);
+        explicit Tile(const sf::Vector2f& pos,const Type& t,const sf::Sprite& s,bool isIsometric = false);
         /**
          * @brief Setter for the type Of the Tile
          * @param t Tile::Type
@@ -55,11 +55,13 @@ class Tile{
         inline const sf::Vector2f& getBounds(){ return bounds; }
         Tile& setScale(const sf::Vector2f& s);
         inline const sf::Vector2f& getScale(){ return sprite.getScale(); }
+        inline const bool isIsometric(){ return isometric; }
     private:
         sf::Sprite sprite;
         sf::Vector2f position;
         sf::Vector2f bounds;
         Type type;
+        bool isometric;
 };
 
 sf::Vector2f Cart2DToIso(sf::Vector2f pos);
