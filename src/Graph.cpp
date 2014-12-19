@@ -342,14 +342,13 @@ std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,con
     auto m = std::vector<std::vector<Tile>>(col);
     auto type = Tile::Type::GRASS;
     sf::Sprite s;
+    float x = 0,y = 0;
     for(auto i=0u;i<col;++i){
         m[i] = std::vector<Tile>(row,Tile(sf::Vector2f(0,0),type,s,isometric));
+        auto& borders = m[i][0].getBounds();
         for(auto j=0u;j<row;++j){
             s = sf::Sprite(textures[type]);
             s.setScale(0.5f,0.5f);
-            auto& borders = m[i][j].getBounds();
-            float x;
-            float y;
             if(isometric){
                 x = j * borders.x / 2;
                 y = i * borders.y / 2;

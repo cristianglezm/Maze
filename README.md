@@ -8,7 +8,7 @@ Currently there is only one Algorithm to Generate the maze:
 	* Randomness: Choose the way that selects the next node to process its neighbors (between linear and random). 
 	* Binomial: Choose the way that selects the neighbor to disconnect from the rest (between uniform and binomial).
 
-[Video](https://www.youtube.com/watch?v=AEI9HyGn89U)
+[Video](http://youtu.be/tLzJpE0kRS4)
 
 Keys
 
