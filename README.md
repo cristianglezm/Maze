@@ -11,9 +11,11 @@ Currently there is only one Algorithm to Generate the maze:
 [Video](http://youtu.be/tLzJpE0kRS4)
 
 Isometric
+
 ![Isometric.png](https://bitbucket.org/repo/qoqboX/images/141456758-Isometric.png)
 
 Topdown
+
 ![Topdown.png](https://bitbucket.org/repo/qoqboX/images/3667644295-Topdown.png)
 
 Keys
