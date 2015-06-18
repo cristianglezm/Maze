@@ -35,6 +35,7 @@ class Graph{
             Edge(const std::size_t& p,const std::size_t& n,const int& w);
             bool operator==(const Edge& rhs) const;
             bool operator!=(const Edge& rhs) const;
+            bool operator<=(const Edge& rhs) const;
         };
         /**
          * @brief Constructor
@@ -128,6 +129,7 @@ class Graph{
          * @return std::vector<Node*> path
          */
         std::vector<Node*> gbfs(Node& s,Node& d);
+        std::vector<Node*> aStar(Node& s,Node& d);
         ~Graph();
     private:
         /**

@@ -14,15 +14,16 @@ using grid = std::vector<std::vector<Tile>>;
 void benchmark(const unsigned& testCount);
 
 Tile* getTile(grid& m,sf::Vector2f pos){
+    Tile* res = nullptr;
     for(auto& vec: m){
         for(auto& t: vec){
             t.setColor(sf::Color::White);
             if(t.Contains(pos)){
-                return &t;
+                res = &t;
             }
         }
     }
-    return nullptr;
+    return res;
 }
 int main(){
     bool Continue = true;
@@ -67,7 +68,7 @@ int main(){
         Tile* origen = nullptr;
         Tile* dest = nullptr;
         // result is for the program to wait until the threads are finished.
-        std::future<void> result[5];
+        std::future<void> result[6];
         bool running = true;
         while(running){
             sf::Event event;
@@ -91,9 +92,20 @@ int main(){
                                 });
                             }
                         }
-                        if(event.key.code == sf::Keyboard::G){
+                        if(event.key.code == sf::Keyboard::A){
                             if(origen && dest){
                                 result[1] = std::async(std::launch::async,[&](){
+                                           sf::Clock c;
+                                           auto path = g.aStar(g.getNode(origen),g.getNode(dest));
+                                           std::cout << " A*: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
+                                           auto pathSize = path.size();
+                                           std::cout << "Path Size: " << pathSize << std::endl;
+                                });
+                            }
+                        }
+                        if(event.key.code == sf::Keyboard::G){
+                            if(origen && dest){
+                                result[2] = std::async(std::launch::async,[&](){
                                             sf::Clock c;
                                             auto path = g.gbfs(g.getNode(origen),g.getNode(dest));
                                             std::cout << " GBFS: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
@@ -104,7 +116,7 @@ int main(){
                         }
                         if(event.key.code == sf::Keyboard::D){
                             if(origen && dest){
-                                result[2] = std::async(std::launch::async,[&](){
+                                result[3] = std::async(std::launch::async,[&](){
                                             sf::Clock c;
                                             auto path = g.dfs(g.getNode(origen),g.getNode(dest));
                                             std::cout << " DFS: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
@@ -130,14 +142,14 @@ int main(){
                         }
                         if(event.key.code == sf::Keyboard::M){
                             if(origen){
-                                result[3] = std::async(std::launch::async,[&](){
+                                result[4] = std::async(std::launch::async,[&](){
                                             sf::Clock c;
                                             g.genMaze(g.getNode(origen),randomness,sf::Sprite(texs[1]),binomial);
                                             std::cout << "Origen GenMaze: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
                                 });
                             }
                             if(dest){
-                                result[4] = std::async(std::launch::async,[&](){
+                                result[5] = std::async(std::launch::async,[&](){
                                             sf::Clock c;
                                             g.genMaze(g.getNode(dest),randomness,sf::Sprite(texs[1]),binomial);
                                             std::cout << "Dest GenMaze: -> elapsed time: " << c.restart().asSeconds() << "s" << std::endl;
@@ -146,7 +158,7 @@ int main(){
                         }
                         if(event.key.code == sf::Keyboard::S){
                             sf::Image capture = App.capture();
-                            capture.saveToFile("capture.png");
+                            capture.saveToFile("screenshot.png");
                         }
                         if(event.key.code == sf::Keyboard::Add){
                             sf::View v = App.getView();
@@ -182,7 +194,7 @@ int main(){
                         }
                         break;
                     case sf::Event::MouseButtonReleased:
-                            if(event.mouseButton.button == sf::Mouse::Left){
+                            if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                                 sf::Vector2f d = static_cast<sf::Vector2f>(App.mapPixelToCoords(sf::Mouse::getPosition(App),App.getView()));
                                 origen = getTile(m,d);
                                 if(origen){
@@ -194,7 +206,7 @@ int main(){
                                     dest->setColor(sf::Color::Red);
                                 }
                             }
-                            if(event.mouseButton.button == sf::Mouse::Right){
+                            if(sf::Mouse::isButtonPressed(sf::Mouse::Right)){
                                 sf::Vector2f d = static_cast<sf::Vector2f>(App.mapPixelToCoords(sf::Mouse::getPosition(App),App.getView()));
                                 dest = getTile(m,d);
                                 if(dest){

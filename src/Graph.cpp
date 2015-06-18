@@ -1,5 +1,6 @@
 #include "Graph.hpp"
-//#define SLOW_SEARCH
+#include <iostream>
+#define SLOW_SEARCH
 #include "parallel.hpp"
 #ifdef SLOW_SEARCH
     #include <thread>
@@ -33,6 +34,9 @@
         return (weight != rhs.weight
                 || prev != rhs.prev
                 || next != rhs.next);
+    }
+    bool Graph::Edge::operator<=(const Edge& rhs) const{
+        return (weight<=rhs.weight);
     }
     Graph::Graph()
     : nodes()
@@ -76,8 +80,9 @@
         edges[n.index].clear();
     //#define PARALLEL_ISOLATE
     #ifdef PARALLEL_ISOLATE
-        auto removeEdges = [&n](std::vector<Edge>& vec){
-            vec.erase(std::remove_if(std::begin(vec),std::end(vec),[&n](const Edge& e){ return (n.index == e.next); }),std::end(vec));
+        int index = n.index;
+        auto removeEdges = [index](std::vector<Edge>& vec){
+            vec.erase(std::remove_if(std::begin(vec),std::end(vec),[index](const Edge& e){ return (index == e.next); }),std::end(vec));
         };
         parallel::for_each(edges.begin(),edges.end(),removeEdges);
     #else
@@ -100,7 +105,7 @@
         std::vector<Node*> cells;
         reset();
         std::random_device rd;
-        std::default_random_engine rEngine(rd());
+        std::mt19937 rEngine(rd());
         cells.push_back(&origin);
         std::bernoulli_distribution bdRandomness(randomness);
         std::bernoulli_distribution bdBinomial(binomial);
@@ -326,6 +331,90 @@
         }
         return path;
     }
+    std::vector<Graph::Node*> Graph::aStar(Node& s,Node& d){
+    #ifdef MANHATTAN
+        auto eval = [&](Node* a,Node* b){
+            auto sumA = 10 *(std::abs(a->tile->getPosition().x-d.tile->getPosition().x)
+                           + std::abs(a->tile->getPosition().y-d.tile->getPosition().y));
+            auto sumB = 10 *(std::abs(b->tile->getPosition().x-d.tile->getPosition().x)
+                           + std::abs(b->tile->getPosition().y-d.tile->getPosition().y));
+            return (sumA > sumB);
+        };
+    #elif defined CHEBYSEV
+        auto eval = [&](Node* a,Node* b){
+            auto maxA = std::max(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
+            auto maxB = std::max(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            return (maxA > maxB);
+        };
+    #else // EUCLIDEAN
+        auto eval = [&](Node* a,Node* b){
+            auto hypotA = std::hypot(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
+            auto hypotB = std::hypot(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            return (hypotA > hypotB);
+        };
+    #endif
+        std::priority_queue<Node*,std::deque<Node*>,decltype(eval)> queue(eval);
+        reset();
+        std::vector<Node*> path;
+        if(s == d){
+            path.push_back(&s);
+            return path;
+        }
+        queue.push(&s);
+        auto evalEdge = [](Edge* e1,Edge* e2){
+            auto w1 = std::abs(e1->weight);
+            auto w2 = std::abs(e2->weight);
+            return (w1 >= w2);
+        };
+        while(!queue.empty()){
+            #ifdef SLOW_SEARCH
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            #endif
+            auto& v = *queue.top();
+            queue.pop();
+            if(!v.visited){
+                v.tile->setColor(sf::Color::Green);
+                v.visited = true;
+                std::priority_queue<Edge*,std::deque<Edge*>,decltype(evalEdge)> edgeQueue(evalEdge);
+                // look at the edges of current node.
+                for(auto& e: edges[v.index]){
+                    if(nodes[e.next].visited)
+                        continue;
+                    if(nodes[e.next].parent == -1){
+                        nodes[e.next].parent = e.prev;
+                    }
+                    if(nodes[e.next] == d){
+                        nodes[e.next].tile->setColor(sf::Color::Red);
+                        Node* curr = &nodes[e.next];
+                        // build the path
+                        while(curr != &s && curr != nullptr){
+                            #ifdef SLOW_SEARCH
+                                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                            #endif
+                            path.push_back(curr);
+                            if(curr->parent != -1){
+                                auto index = curr->parent;
+                                curr->parent = -1;
+                                curr = &nodes[index];
+                            }else{
+                                curr = nullptr;
+                            }
+                            curr->tile->setColor(sf::Color::Magenta);
+                        }
+                        std::reverse(path.begin(),path.end());
+                        return path;
+                    }
+                    edgeQueue.push(&e);
+                }
+                while(!edgeQueue.empty()){
+                    auto& e = *edgeQueue.top();
+                    edgeQueue.pop();
+                    queue.push(&nodes[e.next]);
+                }
+            }
+        }
+        return path;
+    }
     Graph::~Graph(){
         nodes.clear();
         edges.clear();
@@ -371,33 +460,35 @@ void createGraph(Graph* g,std::vector<std::vector<Tile>>& grid,bool diagonal){
     int col = grid.size();
     int row = grid[0].size();
     auto size = row * col;
+    static std::random_device rd;
+    static std::default_random_engine rEngine(rd());
     for(int i=0;i<size;++i){
         // down
         if((i%row)!=(row-1)){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+1),0));
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+1),random(0,size,rEngine)));
         }
         // right
         if((i+row)<size){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row),0));
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row),random(0,size,rEngine)));
         }
         // diagonal
         if(diagonal){
             // right-down : left-top
             if((i+row+1)<size){
-                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row+1),0));
+                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row+1),random(0,size,rEngine)));
             }
             // left-down : right-top
             if((i+row-1)<size){
-                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row-1),0));
+                g->addUndirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i+row-1),random(0,size,rEngine)));
             }
         }
         // left
         if((i-row)>=0){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-row),0));
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-row),random(0,size,rEngine)));
         }
         // up
         if((i-1)>=0 && ((i-1)%row)!=(row-1)){
-            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-1),0));
+            g->addDirectedEdge(Graph::Edge(std::size_t(i),std::size_t(i-1),random(0,size,rEngine)));
         }
     }
 }
