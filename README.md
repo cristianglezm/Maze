@@ -1,4 +1,4 @@
-﻿# Maze #
+# Maze #
 
 Maze is a demo to see different graph traversal algorithms in action and generate mazes with differents algorithms.
 Currently there is only one Algorithm to Generate the maze:
@@ -20,6 +20,7 @@ Topdown
 
 Keys
 
+* A - A* search
 * D - Deep First Search
 * B - Breadth First Search
 * G - Greedy Best First Search

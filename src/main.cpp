@@ -194,7 +194,7 @@ int main(){
                         }
                         break;
                     case sf::Event::MouseButtonReleased:
-                            if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+                            if(event.mouseButton.button == sf::Mouse::Left){
                                 sf::Vector2f d = static_cast<sf::Vector2f>(App.mapPixelToCoords(sf::Mouse::getPosition(App),App.getView()));
                                 origen = getTile(m,d);
                                 if(origen){
@@ -206,7 +206,7 @@ int main(){
                                     dest->setColor(sf::Color::Red);
                                 }
                             }
-                            if(sf::Mouse::isButtonPressed(sf::Mouse::Right)){
+                            if(event.mouseButton.button == sf::Mouse::Right){
                                 sf::Vector2f d = static_cast<sf::Vector2f>(App.mapPixelToCoords(sf::Mouse::getPosition(App),App.getView()));
                                 dest = getTile(m,d);
                                 if(dest){
