@@ -25,7 +25,12 @@ addons:
     - libsndfile1-dev
     - libglu1-mesa-dev
     - libfreetype6-dev
-    - libxcb
+    - libsfml-dev
+    - libx11-xcb-dev
+    - libxcb-icccm4-dev
+    - libxcb-image0
+    - libxcb-randr0-dev
+    - libxcb-util0-dev
     - libxcb1-dev
 
 before_install:
