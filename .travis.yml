@@ -16,6 +16,8 @@ addons:
     - cmake
     - p7zip-full
     - g++-5
+    - gcc-5
+    - cmake
     #SFML dependencies:
     - libopenal-dev
     - libjpeg-dev
