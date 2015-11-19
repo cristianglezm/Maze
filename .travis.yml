@@ -41,7 +41,7 @@ install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
 - git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.2
 - mkdir build && cd build
-- cmake .. && make && make install
+- cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install .. && make && make install
 
 
 script:
