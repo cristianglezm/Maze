@@ -5,6 +5,8 @@ compiler:
 - gcc
 - clang
 
+sudo: true
+
 install:
 - apt-get update -qq && apt-get install -y libpthread-stubs0-dev libgl1-mesa-dev
 - apt-get install -y freeglut3-dev libjpeg-dev libfreetype6-dev libxrandr-dev
