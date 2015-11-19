@@ -8,9 +8,9 @@ compiler:
 sudo: required
 
 install:
-- apt-get update -qq && apt-get install -y libpthread-stubs0-dev libgl1-mesa-dev
-- apt-get install -y freeglut3-dev libjpeg-dev libfreetype6-dev libxrandr-dev
-- apt-get install -y libglew-dev libsndfile1-dev libopenal-dev
+- sudo apt-get update -qq && sudo apt-get install -y libpthread-stubs0-dev libgl1-mesa-dev
+- sudo apt-get install -y freeglut3-dev libjpeg-dev libfreetype6-dev libxrandr-dev
+- sudo apt-get install -y libglew-dev libsndfile1-dev libopenal-dev
 - git clone https://github.com/SFML/SFML && cd SFML && mkdir build && cd build
 - cmake .. && make && make install
 
