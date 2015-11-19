@@ -40,11 +40,13 @@ before_install:
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
 - git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.2
+- export SFML_ROOT=$(pwd)
 - mkdir build && cd build
 - cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install .. && make && make install
 
 
 script:
-- cmake .
+- cd ../.. && mkdir build && cd build
+- cmake -DSFML_ROOT=$SFML_ROOT -DSLOW_SEARCH=TRUE -DCMAKE_INSTALL_PREFIX=$(pwd)/install ..
 - make
 - make install
