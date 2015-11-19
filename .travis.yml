@@ -1,0 +1,18 @@
+language: cpp
+
+
+compiler:
+	- gcc
+	- clang
+
+
+install:
+	- apt-get update -qq && apt-get install -y libpthread-stubs0-dev libgl1-mesa-dev freeglut3-dev libjpeg-dev libfreetype6-dev libxrandr-dev libglew-dev libsndfile1-dev libopenal-dev
+	- git clone https://github.com/SFML/SFML && cd SFML && mkdir build && cd build
+	- cmake .. && make && make install
+
+
+script:
+	- cmake .
+	- make
+	- make install
