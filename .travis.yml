@@ -2,11 +2,10 @@ language: cpp
 sudo: false
 compiler:
   - gcc
-  - clang
 
 env:
   global:
-    - GCC_VERSION="5.2"
+    - GCC_VERSION="4.8"
 
 addons:
   apt:
@@ -16,7 +15,7 @@ addons:
     #Build dependencies:
     - cmake
     - p7zip-full
-    - g++-5.2
+    - g++-4.8
     #SFML dependencies:
     - libopenal-dev
     - libjpeg-dev
@@ -26,6 +25,7 @@ addons:
     - libsndfile1-dev
     - libglu1-mesa-dev
     - libfreetype6-dev
+    - libxcb-dev
 
 before_install:
 - "export DISPLAY=:99.0"
