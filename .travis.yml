@@ -5,7 +5,7 @@ compiler:
 
 env:
   global:
-    - GCC_VERSION="4.8"
+    - GCC_VERSION="5"
 
 addons:
   apt:
@@ -15,7 +15,7 @@ addons:
     #Build dependencies:
     - cmake
     - p7zip-full
-    - g++-4.8
+    - gcc-5
     #SFML dependencies:
     - libopenal-dev
     - libjpeg-dev
@@ -39,7 +39,8 @@ before_install:
 
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
-- git clone https://github.com/SFML/SFML && cd SFML && mkdir build && cd build
+- git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.2
+- mkdir build && cd build
 - cmake .. && make && make install
 
 
