@@ -1,10 +1,7 @@
 #include "Graph.hpp"
 #include <iostream>
-#define SLOW_SEARCH
 #include "parallel.hpp"
-#ifdef SLOW_SEARCH
-    #include <thread>
-#endif
+#include <thread>
 
     Graph::Node::Node(Tile* t)
     : tile(t)
@@ -267,7 +264,7 @@
                            + std::abs(b->tile->getPosition().y-d.tile->getPosition().y));
             return (sumA > sumB);
         };
-    #elif defined CHEBYSEV
+    #elif defined CHEBYSHEV
         auto eval = [&](Node* a,Node* b){
             auto maxA = std::max(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
             auto maxB = std::max(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
@@ -340,7 +337,7 @@
                            + std::abs(b->tile->getPosition().y-d.tile->getPosition().y));
             return (sumA > sumB);
         };
-    #elif defined CHEBYSEV
+    #elif defined CHEBYSHEV
         auto eval = [&](Node* a,Node* b){
             auto maxA = std::max(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
             auto maxB = std::max(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);

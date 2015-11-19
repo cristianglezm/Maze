@@ -42,8 +42,9 @@ Maze requires the following dependencies:
 
 Use CMake to build the project.
 
-* select the root directory of SFML
-
-* mark the SLOW_SEARCH option if you want to see the progress of the Algorithms.
-
-* press configure and generate Project.
+```
+mkdir build && cd build
+cmake -G"MinGW Makefiles" -DSLOW_SEARCH=TRUE -DPARALLEL_ISOLATE=FALSE -DMANHATTAN=TRUE ..
+make
+make install
+```

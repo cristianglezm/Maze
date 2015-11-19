@@ -2,8 +2,6 @@
 #include <future>
 #include <atomic>
 
-#include <iostream>
-
 namespace parallel{
     /**
      * @brief
@@ -16,7 +14,7 @@ namespace parallel{
             std::for_each(first,last,f);
             return;
         }
-        const auto maxThreads = (length+minPerThread-1)/minPerThread;
+        const int maxThreads = (length+minPerThread-1)/minPerThread;
         const int hwThreads = std::thread::hardware_concurrency();
         const auto numThreads = std::min(hwThreads,maxThreads);
         const auto blockSize = length/numThreads;
