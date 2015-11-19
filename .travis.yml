@@ -25,7 +25,7 @@ addons:
     - libsndfile1-dev
     - libglu1-mesa-dev
     - libfreetype6-dev
-    - libxcb-dev
+    - libxcb1-dev
 
 before_install:
 - "export DISPLAY=:99.0"
