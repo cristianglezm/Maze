@@ -41,6 +41,7 @@ before_install:
 
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+- sh https://cmake.org/files/v3.4/cmake-3.4.0-Linux-x86_64.sh
 - git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.2
 - export SFML_ROOT=$(pwd)
 - mkdir build && cd build
