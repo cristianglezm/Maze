@@ -1,5 +1,7 @@
 # Maze #
 
+[![Build Status](https://travis-ci.org/cristianglezm/Maze.svg)](https://travis-ci.org/cristianglezm/Maze)
+
 Maze is a demo to see different graph traversal algorithms in action and generate mazes with differents algorithms.
 Currently there is only one Algorithm to Generate the maze:
 
