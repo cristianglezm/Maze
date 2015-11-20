@@ -45,7 +45,7 @@ install:
 - tar -zxf cmake-3.4.0.tar.gz && cd cmake-3.4.0 && ./bootstrap --prefix=$(pwd)
 - make && make install && export cmake34=$(pwd)/bin/cmake && cd ..
 - git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.2
-- export SFML_ROOT=$(pwd)
+- export SFML_ROOT=$(pwd)/build/install
 - mkdir build && cd build
 - cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install .. && make && make install
 
