@@ -158,7 +158,9 @@ int main(){
                         }
                         if(event.key.code == sf::Keyboard::S){
                             sf::Image capture = App.capture();
-                            capture.saveToFile("screenshot.png");
+                            static int counter = 0;
+                            capture.saveToFile("screenshot" + std::to_string(counter) + ".png");
+                            ++counter;
                         }
                         if(event.key.code == sf::Keyboard::Add){
                             sf::View v = App.getView();
