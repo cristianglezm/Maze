@@ -258,7 +258,7 @@ void benchmark(const unsigned& testCount){
             t2.loadFromFile("data/Shrub.jpg");
             texs.push_back(t2);
         }
-    for(int i=1;i<=testCount;i+=100){
+    for(auto i=1u;i<=testCount;i+=100){
         auto testGrid = createGrid(texs,i,i);
         Graph g;
         createGraph(&g,testGrid,false);
