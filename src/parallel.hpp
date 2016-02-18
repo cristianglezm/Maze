@@ -15,7 +15,7 @@ namespace parallel{
             return;
         }
         const int maxThreads = (length+minPerThread-1)/minPerThread;
-        const int hwThreads = std::thread::hardware_concurrency();
+        const int hwThreads = std::thread::hardware_concurrency() - 1;
         const auto numThreads = std::min(hwThreads,maxThreads);
         const auto blockSize = length/numThreads;
         std::vector<std::thread> threads(numThreads-1);
