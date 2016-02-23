@@ -10,8 +10,8 @@ Currently there is only one Algorithm to Generate the maze:
 	* Randomness: Choose the way that selects the next node to process its neighbors (between linear and random). 
 	* Binomial: Choose the way that selects the neighbor to disconnect from the rest (between uniform and binomial).
 
-[Download](https://bitbucket.org/cristian_glez_m/maze/downloads
-)
+[Download](https://bitbucket.org/cristian_glez_m/maze/downloads)
+
 [Video](http://youtu.be/tLzJpE0kRS4)
 
 Isometric
@@ -58,5 +58,5 @@ Android
 cd android
 android update project --name Maze --target android-19 --path .
 ndk-build
-ant debug // or release
+ant debug
 ```
