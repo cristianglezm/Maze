@@ -119,7 +119,11 @@
                 int index = 0;
                 auto NotVisitedCellsSize = notVisitedCells.size();
                 if(bdBinomial(rEngine)){
-                    index = random<int,std::binomial_distribution<int>>(1,NotVisitedCellsSize,rEngine) - 1;
+                    #ifndef ANDROID // there's a bug in android binomial_distribution that freezes the thread.
+                        index = random<int,std::binomial_distribution<int>>(1,NotVisitedCellsSize,rEngine) - 1;
+                    #else
+                        index = random<int>(1,NotVisitedCellsSize,rEngine) - 1;
+                    #endif
                 }else{
                     index = random<int>(1,NotVisitedCellsSize,rEngine) - 1;
                 }

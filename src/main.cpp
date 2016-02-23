@@ -47,17 +47,17 @@ int main(){
         if(isIsometric){
             sf::Texture t;
             t.loadFromFile("data/landscapeTiles_067.png");
-            texs.push_back(t);
+            texs.emplace_back(t);
             sf::Texture t2;
             t2.loadFromFile("data/landscapeTiles_036.png");
-            texs.push_back(t2);
+            texs.emplace_back(t2);
         }else{
             sf::Texture t;
             t.loadFromFile("data/floor.jpg");
-            texs.push_back(t);
+            texs.emplace_back(t);
             sf::Texture t2;
-            t2.loadFromFile("data/shrub.jpg");
-            texs.push_back(t2);
+            t2.loadFromFile("data/Shrub.jpg");
+            texs.emplace_back(t2);
         }
         Continue = false;
         auto m = createGrid(texs,row,col,isIsometric);
@@ -253,10 +253,10 @@ void benchmark(const unsigned& testCount){
         {
             sf::Texture t;
             t.loadFromFile("data/floor.jpg");
-            texs.push_back(t);
+            texs.emplace_back(t);
             sf::Texture t2;
             t2.loadFromFile("data/Shrub.jpg");
-            texs.push_back(t2);
+            texs.emplace_back(t2);
         }
     for(auto i=1u;i<=testCount;i+=100){
         auto testGrid = createGrid(texs,i,i);

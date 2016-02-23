@@ -44,13 +44,34 @@ class Tile{
          * @return Tile&
          */
         Tile& setPosition(const sf::Vector2f& pos);
+        /**
+         * @brief 
+         * @param amount
+         * @return 
+         */
         Tile& translate(const sf::Vector2f& amount);
+        /**
+         * @brief 
+         * @return 
+         */
         inline const sf::Vector2f& getPosition(){ return position; }
-
+        /**
+         * @brief 
+         * @param c
+         * @return 
+         */
         Tile& setColor(const sf::Color& c);
-
+        /**
+         * @brief 
+         * @param pos
+         * @return 
+         */
         bool Contains(const sf::Vector2f& pos);
-
+        /**
+         * @brief 
+         * @param b
+         * @return 
+         */
         Tile& setBounds(const sf::Vector2f& b);
         inline const sf::Vector2f& getBounds(){ return bounds; }
         Tile& setScale(const sf::Vector2f& s);
