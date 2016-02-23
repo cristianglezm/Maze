@@ -50,3 +50,11 @@ cmake -G"MinGW Makefiles" -DSLOW_SEARCH=TRUE -DPARALLEL_ISOLATE=FALSE -DMANHATTA
 make
 make install
 ```
+Android
+===
+```
+cd android
+android update project --name Maze --target android-19 --path .
+ndk-build
+ant debug // or release
+```
