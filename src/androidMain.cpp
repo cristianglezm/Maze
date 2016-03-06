@@ -287,7 +287,7 @@ std::vector<Button> loadGUI(const sf::Texture& buttonTexture, const sf::Font& fo
     sf::Text txtDFS("dfs",font);
     Button btnDFS(sf::Vector2f(5.0,(height * 6) + 15.0),sf::Vector2f(4,3),buttonSprite,txtDFS, [](){});
     buttons.emplace_back(btnDFS);
-    return std::move(buttons);
+    return buttons;
 }
 
 Tile* getTile(grid& m,sf::Vector2f pos){
