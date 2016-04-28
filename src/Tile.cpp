@@ -1,4 +1,5 @@
 #include "Tile.hpp"
+
     sf::Vector2f Cart2DToIso(sf::Vector2f pos){
         sf::Vector2f tmp(pos.x - pos.y,(pos.x + pos.y) / 2);
         return tmp;

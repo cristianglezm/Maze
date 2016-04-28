@@ -40,8 +40,8 @@
     , edges(){}
     void Graph::addNode(Node n){
         n.index = nodes.size();
-        nodes.push_back(n);
-        edges.push_back(std::vector<Edge>());
+        nodes.emplace_back(n);
+        edges.emplace_back(std::vector<Edge>());
     }
     Graph::Node& Graph::getNode(Tile* t){
         return *std::find_if(nodes.begin(),nodes.end(),[&](Node& n){
@@ -55,12 +55,12 @@
         //nodes.erase(nodes.begin() + n.index);
     }
     void Graph::addUndirectedEdge(const Edge& e){
-        edges[e.prev].push_back(e);
+        edges[e.prev].emplace_back(e);
         Edge tmp(e.next,e.prev,e.weight);
-        edges[tmp.prev].push_back(tmp);
+        edges[tmp.prev].emplace_back(tmp);
     }
     void Graph::addDirectedEdge(const Edge& e){
-        edges[e.prev].push_back(e);
+        edges[e.prev].emplace_back(e);
     }
     void Graph::removeDirectedEdge(const Edge& e){
         edges[e.prev].erase(std::remove(edges[e.prev].begin(),edges[e.prev].end(),e),edges[e.prev].end());
@@ -79,21 +79,29 @@
     #ifdef PARALLEL_ISOLATE
         int index = n.index;
         auto removeEdges = [index](std::vector<Edge>& vec){
-            vec.erase(std::remove_if(std::begin(vec),std::end(vec),[index](const Edge& e){ return (index == e.next); }),std::end(vec));
+            vec.erase(std::remove_if(std::begin(vec),std::end(vec),
+                [index](const Edge& e){
+                    return (index == e.next);
+                }), std::end(vec));
         };
         parallel::for_each(edges.begin(),edges.end(),removeEdges);
     #else
         for(auto& vec:edges){
-            vec.erase(std::remove_if(std::begin(vec),std::end(vec),[&n](const Edge& e){ return (n.index == e.next); }),std::end(vec));
+            vec.erase(std::remove_if(std::begin(vec),std::end(vec),
+                [&n](const Edge& e){
+                    return (n.index == e.next);
+                }), std::end(vec));
         }
     #endif
     }
     bool Graph::areConnected(const Node& n1,const Node& n2){
-        bool n1Connected = std::find_if(edges[n1.index].begin(),edges[n1.index].end(),[&](const Edge& e){
-                                        return (n1.index == e.prev && n2.index == e.next);
+        bool n1Connected = std::find_if(std::begin(edges[n1.index]),std::end(edges[n1.index]),
+                                        [&](const Edge& e){
+                                            return (n1.index == e.prev && n2.index == e.next);
                                         }) != edges[n1.index].end();
-        bool n2Connected = std::find_if(edges[n2.index].begin(),edges[n2.index].end(),[&](const Edge& e){
-                                        return (n2.index == e.prev && n1.index == e.next);
+        bool n2Connected = std::find_if(std::begin(edges[n2.index]),std::end(edges[n2.index]),
+                                        [&](const Edge& e){
+                                            return (n2.index == e.prev && n1.index == e.next);
                                         }) != edges[n2.index].end();
         return (n1Connected && n2Connected);
     }
@@ -103,7 +111,7 @@
         reset();
         std::random_device rd;
         std::mt19937 rEngine(rd());
-        cells.push_back(&origin);
+        cells.emplace_back(&origin);
         std::bernoulli_distribution bdRandomness(randomness);
         std::bernoulli_distribution bdBinomial(binomial);
         while(!cells.empty()){
@@ -119,7 +127,7 @@
                 int index = 0;
                 auto NotVisitedCellsSize = notVisitedCells.size();
                 if(bdBinomial(rEngine)){
-                    #ifndef ANDROID // there's a bug in android binomial_distribution that freezes the thread.
+                    #ifndef ANDROID // there's a bug in android(c++_shared) binomial_distribution that freezes the thread.
                         index = random<int,std::binomial_distribution<int>>(1,NotVisitedCellsSize,rEngine) - 1;
                     #else
                         index = random<int>(1,NotVisitedCellsSize,rEngine) - 1;
@@ -129,7 +137,7 @@
                 }
                 auto& wall = *notVisitedCells[index];
                 wall.visited = true;
-                cells.push_back(&wall);
+                cells.emplace_back(&wall);
                 notVisitedCells.erase(notVisitedCells.begin() + index);
                 if(!notVisitedCells.empty()){
                     --NotVisitedCellsSize;
@@ -140,7 +148,7 @@
                     isolate(newCell);
                 }
             }else{
-                cells.erase(std::remove(cells.begin(),cells.end(),cell),cells.end());
+                cells.erase(std::remove(std::begin(cells), std::end(cells), cell), std::end(cells));
             }
         }
     }
@@ -150,7 +158,7 @@
             if(nodes[e.next].visited){
                 visited +=1;
             }else{
-                notVisited.push_back(&nodes[e.next]);
+                notVisited.emplace_back(&nodes[e.next]);
             }
         }
         return (visited == edges[n->index].size());
@@ -160,7 +168,7 @@
         reset();
         std::vector<Node*> path;
         if(s == d){
-            path.push_back(&s);
+            path.emplace_back(&s);
             return path;
         }
         stack.push(&s);
@@ -188,7 +196,7 @@
                             #ifdef SLOW_SEARCH
                                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                             #endif
-                            path.push_back(curr);
+                            path.emplace_back(curr);
                             if(curr->parent != -1){
                                 auto index = curr->parent;
                                 curr->parent = -1;
@@ -212,7 +220,7 @@
         reset();
         std::vector<Node*> path;
         if(s == d){
-            path.push_back(&s);
+            path.emplace_back(&s);
             return path;
         }
         queue.push(&s);
@@ -240,7 +248,7 @@
                             #ifdef SLOW_SEARCH
                                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                             #endif
-                            path.push_back(curr);
+                            path.emplace_back(curr);
                             if(curr->parent != -1){
                                 auto index = curr->parent;
                                 curr->parent = -1;
@@ -270,14 +278,18 @@
         };
     #elif defined CHEBYSHEV
         auto eval = [&](Node* a,Node* b){
-            auto maxA = std::max(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
-            auto maxB = std::max(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            auto maxA = std::max(a->tile->getPosition().x - d.tile->getPosition().x,
+                                    a->tile->getPosition().y - d.tile->getPosition().y);
+            auto maxB = std::max(b->tile->getPosition().x - d.tile->getPosition().x,
+                                    b->tile->getPosition().y - d.tile->getPosition().y);
             return (maxA > maxB);
         };
     #else // EUCLIDEAN
         auto eval = [&](Node* a,Node* b){
-            auto hypotA = std::hypot(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
-            auto hypotB = std::hypot(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            auto hypotA = std::hypot(a->tile->getPosition().x - d.tile->getPosition().x,
+                                        a->tile->getPosition().y - d.tile->getPosition().y);
+            auto hypotB = std::hypot(b->tile->getPosition().x - d.tile->getPosition().x,
+                                        b->tile->getPosition().y - d.tile->getPosition().y);
             return (hypotA > hypotB);
         };
     #endif
@@ -285,7 +297,7 @@
         reset();
         std::vector<Node*> path;
         if(s == d){
-            path.push_back(&s);
+            path.emplace_back(&s);
             return path;
         }
         queue.push(&s);
@@ -313,7 +325,7 @@
                             #ifdef SLOW_SEARCH
                                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                             #endif
-                            path.push_back(curr);
+                            path.emplace_back(curr);
                             if(curr->parent != -1){
                                 auto index = curr->parent;
                                 curr->parent = -1;
@@ -335,22 +347,26 @@
     std::vector<Graph::Node*> Graph::aStar(Node& s,Node& d){
     #ifdef MANHATTAN
         auto eval = [&](Node* a,Node* b){
-            auto sumA = 10 *(std::abs(a->tile->getPosition().x-d.tile->getPosition().x)
-                           + std::abs(a->tile->getPosition().y-d.tile->getPosition().y));
-            auto sumB = 10 *(std::abs(b->tile->getPosition().x-d.tile->getPosition().x)
-                           + std::abs(b->tile->getPosition().y-d.tile->getPosition().y));
+            auto sumA = 10 *(std::abs(a->tile->getPosition().x - d.tile->getPosition().x)
+                           + std::abs(a->tile->getPosition().y - d.tile->getPosition().y));
+            auto sumB = 10 *(std::abs(b->tile->getPosition().x - d.tile->getPosition().x)
+                           + std::abs(b->tile->getPosition().y - d.tile->getPosition().y));
             return (sumA > sumB);
         };
     #elif defined CHEBYSHEV
         auto eval = [&](Node* a,Node* b){
-            auto maxA = std::max(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
-            auto maxB = std::max(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            auto maxA = std::max(a->tile->getPosition().x - d.tile->getPosition().x,
+                                    a->tile->getPosition().y - d.tile->getPosition().y);
+            auto maxB = std::max(b->tile->getPosition().x - d.tile->getPosition().x,
+                                    b->tile->getPosition().y - d.tile->getPosition().y);
             return (maxA > maxB);
         };
     #else // EUCLIDEAN
         auto eval = [&](Node* a,Node* b){
-            auto hypotA = std::hypot(a->tile->getPosition().x-d.tile->getPosition().x,a->tile->getPosition().y-d.tile->getPosition().y);
-            auto hypotB = std::hypot(b->tile->getPosition().x-d.tile->getPosition().x,b->tile->getPosition().y-d.tile->getPosition().y);
+            auto hypotA = std::hypot(a->tile->getPosition().x - d.tile->getPosition().x,
+                                        a->tile->getPosition().y - d.tile->getPosition().y);
+            auto hypotB = std::hypot(b->tile->getPosition().x - d.tile->getPosition().x,
+                                        b->tile->getPosition().y - d.tile->getPosition().y);
             return (hypotA > hypotB);
         };
     #endif
@@ -358,7 +374,7 @@
         reset();
         std::vector<Node*> path;
         if(s == d){
-            path.push_back(&s);
+            path.emplace_back(&s);
             return path;
         }
         queue.push(&s);
@@ -392,7 +408,7 @@
                             #ifdef SLOW_SEARCH
                                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                             #endif
-                            path.push_back(curr);
+                            path.emplace_back(curr);
                             if(curr->parent != -1){
                                 auto index = curr->parent;
                                 curr->parent = -1;
@@ -402,7 +418,7 @@
                             }
                             curr->tile->setColor(sf::Color::Magenta);
                         }
-                        std::reverse(path.begin(),path.end());
+                        std::reverse(std::begin(path),std::end(path));
                         return path;
                     }
                     edgeQueue.push(&e);
@@ -428,7 +444,7 @@
         }
     }
 
-std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,const unsigned& row,const unsigned& col,bool isometric){
+std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures, const unsigned& row, const unsigned& col, bool isometric){
     auto m = std::vector<std::vector<Tile>>(col);
     auto type = Tile::Type::GRASS;
     sf::Sprite s;
@@ -449,7 +465,7 @@ std::vector<std::vector<Tile>> createGrid(std::vector<sf::Texture>& textures,con
             m[i][j] = Tile(sf::Vector2f(x,y),type,s,isometric);
         }
     }
-    return std::move(m);
+    return m;
 }
 
 void createGraph(Graph* g,std::vector<std::vector<Tile>>& grid,bool diagonal){

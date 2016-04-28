@@ -25,8 +25,8 @@ Topdown
 Keys
 
 * A - A* search
-* D - Deep First Search
-* B - Breadth First Search
+* D - Depth-First Search
+* B - Breadth-First Search
 * G - Greedy Best First Search
 * R - remove edges from a node
 * M - Generate maze with the origin and / or dest

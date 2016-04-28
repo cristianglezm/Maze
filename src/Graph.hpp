@@ -6,6 +6,7 @@
 #include <queue>
 #include <SFML/Graphics/Texture.hpp>
 #include "Tile.hpp"
+
 /**
  * @brief Graph class.
  * @author Cristian Glez <Cristian.glez.m@gmail.com>
@@ -109,7 +110,7 @@ class Graph{
          */
         void genMaze(Node& origin,float randomness = 0.25f,sf::Sprite spr = sf::Sprite(),float binomial = 0.5f);
         /**
-         * @brief Deep-First Search
+         * @brief Depth-First Search
          * @param s Graph::Node & src
          * @param d Graph::Node & dest
          * @return std::vector<Node*> path
