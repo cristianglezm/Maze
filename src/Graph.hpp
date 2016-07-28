@@ -1,5 +1,6 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
+
 #include <vector>
 #include <stack>
 #include <random>
@@ -130,6 +131,12 @@ class Graph{
          * @return std::vector<Node*> path
          */
         std::vector<Node*> gbfs(Node& s,Node& d);
+        /**
+         * @brief A* search
+         * @param s Graph::Node& src
+         * @param d Graph::Node& dest
+         * @return std::vector<Node*> path
+         */
         std::vector<Node*> aStar(Node& s,Node& d);
         ~Graph();
     private:
