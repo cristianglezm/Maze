@@ -5,7 +5,7 @@ compiler:
 
 env:
   global:
-    - GCC_VERSION="5"
+    - GCC_VERSION="7"
 
 addons:
   apt:
