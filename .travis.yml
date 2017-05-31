@@ -15,8 +15,8 @@ addons:
     #Build dependencies:
     - cmake
     - p7zip-full
-    - g++-5
-    - gcc-5
+    - g++-6
+    - gcc-6
     - cmake
     #SFML dependencies:
     - libopenal-dev
