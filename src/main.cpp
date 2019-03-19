@@ -157,7 +157,11 @@ int main(){
                             }
                         }
                         if(event.key.code == sf::Keyboard::S){
-                            sf::Image capture = App.capture();
+                            sf::Vector2u windowSize = App.getSize();
+                            sf::Texture texture;
+                            texture.create(windowSize.x, windowSize.y);
+                            texture.update(App);
+                            sf::Image capture = texture.copyToImage();
                             static int counter = 0;
                             capture.saveToFile("screenshot" + std::to_string(counter) + ".png");
                             ++counter;
