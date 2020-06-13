@@ -113,7 +113,7 @@ endif()
 #################################################################################
 install(TARGETS Maze RUNTIME DESTINATION .
 			ARCHIVE DESTINATION .)
-install(FILES LICENSE.txt README.md DESTINATION .)
+install(FILES LICENSE.md README.md DESTINATION .)
 if(NOT BUILD_STATIC AND WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		install(FILES ${SFML_DEBUG_DLLS} DESTINATION .)
