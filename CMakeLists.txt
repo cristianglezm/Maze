@@ -95,7 +95,7 @@ SET(CMAKE_CXX_EXTENSIONS OFF)
 if(WIN32)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -lpthread -static-libgcc -static-libstdc++ -Wall -Wextra")
 elseif(UNIX)
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -pthread -static-libgcc -static-libstdc++ -Wall -Wextra")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -static-libgcc -static-libstdc++ -Wall -Wextra")
 endif(WIN32)
 
 if(NOT CMAKE_BUILD_TYPE)
