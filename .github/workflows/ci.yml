@@ -53,4 +53,5 @@ jobs:
          cmake $ANDROID_FLAGS -DCMAKE_INSTALL_PREFIX=${SFML_ANDROID_ROOT} .. && make install && cd ../..
          cd android && echo "sdk.dir=${ANDROID_SDK}/" > local.properties && echo "ndk.dir=${ANDROID_NDK}/" >> local.properties
          export NDK_MODULE_PATH=${ANDROID_NDK}/sources/
+         chmod +755 gradlew
          ./gradlew assemble${{ matrix.type.name }}
