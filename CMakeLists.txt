@@ -78,7 +78,7 @@ add_executable(Maze ${Maze_SOURCES} ${Maze_INCLUDES})
 ################################################################################
 
 #sfml
-find_package(SFML 2.1 COMPONENTS graphics window system network audio REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics window system network audio REQUIRED)
 if(SFML_FOUND)
 	include_directories(${SFML_INCLUDE_DIR})
 	target_link_libraries(Maze ${SFML_LIBRARIES})

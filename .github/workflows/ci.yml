@@ -1,0 +1,56 @@
+name: ci
+on: push
+
+jobs:
+  build:
+    name: ${{ matrix.platform.name }} ${{ matrix.config.name }} ${{ matrix.type.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: LinuxGCC, os: ubuntu-latest, prefix: xvfb-run -a }
+        - { name: Android,  os: ubuntu-latest }
+        config:
+        - { name: Shared}
+        #- { name: Static, flags: -DBUILD_STATIC=TRUE}
+        type:
+        - { name: Release }
+        - { name: Debug, flags: -DCMAKE_BUILD_TYPE=Debug }
+        include:
+        - platform: { name: LinuxGCC, os: ubuntu-latest }
+          config: { name: Shared}
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v3
+
+    - name: install linux dependencies
+      if: runner.os == 'Linux' && matrix.platform.name != 'Android'
+      run: |
+            sudo apt-get update && sudo apt-get install xorg-dev libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
+            git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.6.x
+            export SFML_ROOT=$(pwd)/build/install
+            mkdir build && cd build
+            cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install -DCMAKE_BUILD_TYPE=${{ matrix.type.name }} .. && make -j4 install && cd ../..
+
+    - name: configure and build linux
+      if: matrix.platform.name == 'LinuxGCC'
+      shell: bash
+      run: |
+        cmake -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/install -DSFML_ROOT=$GITHUB_WORKSPACE/SFML/build/install ${{matrix.platform.flags}} ${{matrix.config.flags}} ${{matrix.type.flags}}
+        ${{matrix.platform.prefix}} cmake --build $GITHUB_WORKSPACE/build --config ${{ matrix.type.name == 'Debug' && 'Debug' || 'Release' }} --target install
+
+    - name: install android and build apk
+      if: matrix.platform.name == 'Android'
+      run: |
+         echo "y" | /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.4.7075529" --channel=0 --sdk_root=/usr/local/lib/android/sdk | grep -v = || true
+         export ANDROID_SDK=/usr/local/lib/android/sdk
+         export ANDROID_NDK=/usr/local/lib/android/sdk/ndk/21.4.7075529
+         export ANDROID_FLAGS="-DCMAKE_BUILD_TYPE=${{ matrix.type.name }} -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=$ANDROID_NDK -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=27"
+         git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.6.x && mkdir build && cd build
+         export SFML_ANDROID_ROOT=${ANDROID_NDK}/sources/third_party/SFML
+         cmake $ANDROID_FLAGS -DCMAKE_INSTALL_PREFIX=${SFML_ANDROID_ROOT} .. && make install && cd ../..
+         cd android && echo "sdk.dir=${ANDROID_SDK}/" > local.properties && echo "ndk.dir=${ANDROID_NDK}/" >> local.properties
+         export NDK_MODULE_PATH=${ANDROID_NDK}/sources/
+         ./gradlew assemble${{ matrix.type.name }}

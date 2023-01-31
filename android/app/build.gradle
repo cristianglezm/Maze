@@ -1,17 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "org.cglez.maze"
-        minSdkVersion 9
-        targetSdkVersion 26
+        minSdkVersion 14
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             ndkBuild {
-                // cppFlags "-std=c++14 -frtti -fexceptions"
+                // cppFlags "-std=c++17 -frtti -fexceptions"
             }
 
         }
@@ -24,6 +24,22 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [activity:"sfml-activity"]
+            externalNativeBuild {
+                ndkBuild {
+                    arguments "BUILD_TYPE=release"
+                }
+            }
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [activity:"sfml-activity-d"]
+            externalNativeBuild {
+                ndkBuild {
+                    arguments "BUILD_TYPE=debug"
+                }
+            }
         }
     }
     externalNativeBuild {
