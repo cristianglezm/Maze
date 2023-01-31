@@ -1,6 +1,6 @@
 # Maze #
 
-[![Build Status](https://travis-ci.org/cristianglezm/Maze.svg?branch=master)](https://travis-ci.org/cristianglezm/Maze)
+[![Build Status](https://github.com/cristianglezm/Maze/actions/workflows/ci.yml/badge.svg)](https://github.com/cristianglezm/Maze/actions/workflows/ci.yml)
 
 Maze is a demo to see different graph traversal algorithms in action and generate mazes with different algorithms.
 Currently there is only one Algorithm to Generate the maze:
