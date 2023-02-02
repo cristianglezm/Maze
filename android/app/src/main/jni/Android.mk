@@ -19,6 +19,7 @@ ifeq ($(BUILD_TYPE), debug)
     LOCAL_SHARED_LIBRARIES += sfml-activity-d
     LOCAL_SHARED_LIBRARIES += openal
     LOCAL_WHOLE_STATIC_LIBRARIES := sfml-main-d
+    LOCAL_CFLAGS += -DDEBUG
 else
     LOCAL_LDLIBS := -llog
     LOCAL_SHARED_LIBRARIES := sfml-system
@@ -29,6 +30,7 @@ else
     LOCAL_SHARED_LIBRARIES += sfml-activity
     LOCAL_SHARED_LIBRARIES += openal
     LOCAL_WHOLE_STATIC_LIBRARIES := sfml-main
+    LOCAL_CFLAGS += -DNDEBUG -O3
 endif
 LOCAL_CPP_FEATURES := rtti exceptions
 LOCAL_CFLAGS += -Wall -std=c++17 -DANDROID
