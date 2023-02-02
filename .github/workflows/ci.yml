@@ -52,7 +52,7 @@ jobs:
          git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.6.x && mkdir build && cd build
          export SFML_ANDROID_ROOT=${ANDROID_NDK}/sources/third_party/SFML
          for arch in $ARCH_ABIS;do
-             cmake $ANDROID_FLAGS -DCMAKE_ANDROID_ARCH=${arch} -DCMAKE_INSTALL_PREFIX=${SFML_ANDROID_ROOT} ..
+             cmake $ANDROID_FLAGS -DCMAKE_ANDROID_ARCH_ABI=${arch} -DCMAKE_INSTALL_PREFIX=${SFML_ANDROID_ROOT} ..
              make -j4 install
              rm -R *
          done
