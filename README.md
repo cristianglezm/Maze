@@ -43,33 +43,34 @@ Requires CMake and one of the following compilers:
 
 Maze requires the following dependencies:
 
-* [SFML](http://sfml-dev.org) 2.5.1 or newer
+* [SFML](http://sfml-dev.org) 2.6.x or newer
 
 Use CMake to build the project.
 
 ```
 mkdir build && cd build
 cmake -G"MinGW Makefiles" -DMAZE_SLOW_SEARCH=TRUE -DMAZE_PARALLEL_ISOLATE=FALSE -DMAZE_MANHATTAN=TRUE ..
-make
-make install
+make -j4 install
 ```
 Android
 ===
+
+You should replace <android_ndk> with the actual folder.
+
 ```
+export NDK_DIR=<android_ndk>
 git clone https://github.com/SFML/SFML SFML
 cd SFML
 mkdir build && cd build && mkdir armeabi-v7a && cd armeabi-v7a
-cmake -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=<android_ndk> \
+cmake -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=$NDK_DIR \
         -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a -DCMAKE_ANDROID_STL_TYPE=c++_shared \ 
         -DCMAKE_BUILD_TYPE=Release -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \ 
-        -DCMAKE_INSTALL_PREFIX=<android_ndk>/sources/third_party/sfml ../..
-make install
+        -DCMAKE_INSTALL_PREFIX=$NDK_DIR/sources/third_party/sfml ../..
+make -j4 install
 cd ../../..
 git clone https://github.com/cristianglezm/Maze Maze
 cd Maze && cd android
-gradle build
-[gradle installDebug]
+./gradlew build
+[./gradlew installDebug]
 
 ```
-
-You should replace <android_ndk> with the actual folder.
