@@ -25,7 +25,8 @@ jobs:
     - name: checkout code
       uses: actions/checkout@v3
 
-    - name: cache-linux
+    - name: cache linux
+      id: cache-linux
       uses: actions/cache@v3.2.4
       with:
         path: SFML/build/install
@@ -44,19 +45,20 @@ jobs:
         mkdir build && cd build
         cmake -DCMAKE_INSTALL_PREFIX=$(pwd)/install -DCMAKE_BUILD_TYPE=${{ matrix.type.name }} .. && make -j4 install && cd ../..
 
-    - name: cache-android
-      uses: actions/cache@v3.2.4
-      with:
-        path: |
-          /usr/local/lib/android/sdk/ndk/21.4.7075529
-        key: ${{ matrix.platform.name }}-${{ matrix.type.name }}-${{ matrix.config.name }}
-
     - name: configure and build Maze
       if: matrix.platform.name == 'LinuxGCC'
       shell: bash
       run: |
         cmake -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/install -DSFML_ROOT=$GITHUB_WORKSPACE/SFML/build/install ${{matrix.platform.flags}} ${{matrix.config.flags}} ${{matrix.type.flags}}
         ${{ matrix.platform.prefix }} cmake --build $GITHUB_WORKSPACE/build --config ${{ matrix.type.name == 'Debug' && 'Debug' || 'Release' }} --target install
+
+    - name: cache android
+      id: cache-android
+      uses: actions/cache@v3.2.4
+      with:
+        path: |
+          /usr/local/lib/android/sdk/ndk/21.4.7075529
+        key: ${{ matrix.platform.name }}-${{ matrix.type.name }}-${{ matrix.config.name }}
 
     - name: install android dependencies
       if: matrix.platform.name == 'Android' && steps.cache-android.outputs.cache-hit != 'true'
