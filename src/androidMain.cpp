@@ -1,8 +1,11 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/View.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Time.hpp>
 #include <future>
 #include "Tile.hpp"
 #include "Menu.hpp"
@@ -78,8 +81,9 @@ int main(void){
         unsigned int currentFingerID = 0;
         int currentX = 0;
         int currentY = 0;
-        float zoomLevel = 0;
         float oldDistance = 0;
+        auto clock = sf::Clock();
+        auto touchTime = sf::Time::Zero;
         bool settingOrigen = false;
         bool settingDest = false;
         std::vector<sf::Event::TouchEvent> touchEvents;
@@ -171,28 +175,26 @@ int main(void){
                         break;
                     case sf::Event::TouchBegan:
                             touchEvents.emplace_back(event.touch);
+                            touchTime = clock.getElapsedTime();
                         break;
                     case sf::Event::TouchMoved:{
+                            static const float zoomSpeed = 0.000001f;
+                            static const float minZoom = 0.2f;
+                            static const float maxZoom = 2.0f;
+                            static float currentZoom = 1.0f;
                             if(touchEvents.size() >= 2){
+                                // update the new position of the finger that moved
                                 touchEvents[event.touch.finger].x = event.touch.x;
                                 touchEvents[event.touch.finger].y = event.touch.y;
                                 auto diffX = touchEvents[0].x - touchEvents[1].x;
                                 auto diffY = touchEvents[0].y - touchEvents[1].y;
-                                auto newDistance = (diffX*diffX+diffY*diffY);
-                                const auto zoomLimit = 15.0;
-                                if((newDistance - oldDistance) > 10){
-                                    view = App.getView();
-                                    if(zoomLevel < zoomLimit){
-                                        ++zoomLevel;
-                                        view.zoom(0.9);
-                                    }
-                                    App.setView(view);
-                                }else if((newDistance - oldDistance) < -10){
-                                    view = App.getView();
-                                    if(zoomLevel > -zoomLimit){
-                                        --zoomLevel;
-                                        view.zoom(1.1);
-                                    }
+                                auto newDistance = (diffX * diffX + diffY * diffY);
+                                view = App.getView();
+                                auto elapsedTime = clock.getElapsedTime().asSeconds() - touchTime.asSeconds();
+                                float zoomAmount = (newDistance - oldDistance) * zoomSpeed * elapsedTime;
+                                if((currentZoom + zoomAmount) >= minZoom && (currentZoom + zoomAmount) <= maxZoom){
+                                    currentZoom += zoomAmount;
+                                    view.zoom(1.0f + zoomAmount);
                                     App.setView(view);
                                 }
                                 oldDistance = newDistance;
