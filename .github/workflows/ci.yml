@@ -88,9 +88,9 @@ jobs:
          chmod +755 gradlew
          ./gradlew assemble${{ matrix.type.name }} --parallel
 
-    - name: upload apk
+    - name: upload apk debug
       if: matrix.platform.name == 'Android' && matrix.type.name == 'Debug'
       uses: actions/upload-artifact@v3
       with:
-        name: android-apk
+        name: maze-android-debug-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
