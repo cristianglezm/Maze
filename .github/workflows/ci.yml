@@ -63,9 +63,9 @@ jobs:
     - name: install android dependencies
       if: matrix.platform.name == 'Android' && steps.cache-android.outputs.cache-hit != 'true'
       run: |
-         echo "y" | /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.4.7075529" --channel=0 --sdk_root=/usr/local/lib/android/sdk | grep -v = || true
-         export ANDROID_SDK=/usr/local/lib/android/sdk
-         export ANDROID_NDK=/usr/local/lib/android/sdk/ndk/21.4.7075529
+         echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;21.4.7075529"
+         export ANDROID_SDK=${ANDROID_SDK_ROOT}
+         export ANDROID_NDK=${ANDROID_SDK}/ndk/21.4.7075529
          export ANDROID_FLAGS="-DCMAKE_BUILD_TYPE=${{ matrix.type.name }} -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=$ANDROID_NDK -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=27"
          export ARCH_ABIS="armeabi-v7a arm64-v8a x86 x86_64"
          git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.6.x && mkdir build && cd build
