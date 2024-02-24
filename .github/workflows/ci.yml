@@ -23,11 +23,11 @@ jobs:
           config: { name: Shared}
     steps:
     - name: checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: cache linux
       id: cache-linux
-      uses: actions/cache@v3.2.4
+      uses: actions/cache@v4
       with:
         path: SFML/build/install
         key: ${{ matrix.platform.name }}-${{ matrix.type.name }}-${{ matrix.config.name }}
@@ -54,19 +54,19 @@ jobs:
 
     - name: cache android
       id: cache-android
-      uses: actions/cache@v3.2.4
+      uses: actions/cache@v4
       with:
         path: |
-          /usr/local/lib/android/sdk/ndk/21.4.7075529
+          /usr/local/lib/android/sdk/ndk/26.2.11394342
         key: ${{ matrix.platform.name }}-${{ matrix.type.name }}-${{ matrix.config.name }}
 
     - name: install android dependencies
       if: matrix.platform.name == 'Android' && steps.cache-android.outputs.cache-hit != 'true'
       run: |
-         echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;21.4.7075529"
+         echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;26.2.11394342"
          export ANDROID_SDK=${ANDROID_SDK_ROOT}
-         export ANDROID_NDK=${ANDROID_SDK}/ndk/21.4.7075529
-         export ANDROID_FLAGS="-DCMAKE_BUILD_TYPE=${{ matrix.type.name }} -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=$ANDROID_NDK -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=27"
+         export ANDROID_NDK=${ANDROID_SDK}/ndk/26.2.11394342
+         export ANDROID_FLAGS="-DCMAKE_BUILD_TYPE=${{ matrix.type.name }} -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=$ANDROID_NDK -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=33"
          export ARCH_ABIS="armeabi-v7a arm64-v8a x86 x86_64"
          git clone https://github.com/SFML/SFML && cd SFML && git checkout 2.6.x && mkdir build && cd build
          export SFML_ANDROID_ROOT=${ANDROID_NDK}/sources/third_party/SFML
@@ -77,20 +77,26 @@ jobs:
          done
          cd ../..
 
+    - name: setup-java
+      if: matrix.platform.name == 'Android'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'oracle'
+        java-version: '18'
+
     - name: build apk
       if: matrix.platform.name == 'Android'
       run: |
-         export ANDROID_SDK=/usr/local/lib/android/sdk
-         export ANDROID_NDK=/usr/local/lib/android/sdk/ndk/21.4.7075529
-         export ANDROID_FLAGS="-DCMAKE_BUILD_TYPE=${{ matrix.type.name }} -DCMAKE_SYSTEM_NAME=Android -DCMAKE_ANDROID_NDK=$ANDROID_NDK -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang -DCMAKE_ANDROID_STL_TYPE=c++_shared -DCMAKE_ANDROID_API=27"
-         cd android && echo "sdk.dir=${ANDROID_SDK}/" > local.properties && echo "ndk.dir=${ANDROID_NDK}/" >> local.properties
+         export ANDROID_SDK=${ANDROID_SDK_ROOT}
+         export ANDROID_NDK=${ANDROID_SDK}/ndk/26.2.11394342
+         cd android
          export NDK_MODULE_PATH=${ANDROID_NDK}/sources/
          chmod +755 gradlew
          ./gradlew assemble${{ matrix.type.name }} --parallel
 
     - name: upload apk debug
       if: matrix.platform.name == 'Android' && matrix.type.name == 'Debug'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: maze-android-debug-apk
         path: android/app/build/outputs/apk/debug/app-debug.apk
