@@ -58,7 +58,7 @@ jobs:
       id: cache-android
       uses: actions/cache@v4
       with:
-        path: ${ANDROID_SDK_ROOT}/ndk/26.2.11394342
+        path: /usr/local/lib/android/sdk/ndk/26.2.11394342
         key: ${{ matrix.platform.name }}-${{ matrix.type.name }}-${{ matrix.config.name }}
 
     - name: install android dependencies
